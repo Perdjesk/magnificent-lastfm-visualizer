@@ -1,27 +1,29 @@
-package com.example.blublu;
+package ch.gapa.master.mlv.view;
 
 import android.content.Context;
 import android.util.AttributeSet;
-import android.util.Log;
 import android.view.GestureDetector;
 import android.view.MotionEvent;
 import android.view.ScaleGestureDetector;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
+import ch.gapa.master.mlv.gestureslistener.ScaleListener;
+import ch.gapa.master.mlv.gestureslistener.SimpleGestureListener;
+import ch.gapa.master.mlv.view.worker.GraphWorker;
 
-public class Sview extends SurfaceView implements SurfaceHolder.Callback {
+public class GraphView extends SurfaceView implements SurfaceHolder.Callback {
 
 	SurfaceHolder surfaceHolder; // needed fro drawing
-	SThread myThread; // will make MyThread next
+	GraphWorker worker; // will make MyThread next
 	GestureDetector actionDetector;
 	ScaleGestureDetector scaleGestureDetector;
 
-	public Sview(Context context) {
+	public GraphView(Context context) {
 		super(context);
 		init(context);
 	}
 
-	public Sview(Context context, AttributeSet attributeSet) {
+	public GraphView(Context context, AttributeSet attributeSet) {
 		super(context, attributeSet);
 		init(context);
 	}
@@ -29,11 +31,11 @@ public class Sview extends SurfaceView implements SurfaceHolder.Callback {
 	public void init(Context context) {
 		surfaceHolder = getHolder();
 		surfaceHolder.addCallback(this);
-		myThread = new SThread(surfaceHolder,this);
+		worker = new GraphWorker(surfaceHolder,this);
 		actionDetector = new GestureDetector(context, new SimpleGestureListener(
-				myThread));
+				worker));
 		scaleGestureDetector = new ScaleGestureDetector(context,
-				new ScaleListener(myThread));
+				new ScaleListener(worker));
 		setFocusable(true);
 	}
 	
@@ -53,11 +55,12 @@ public class Sview extends SurfaceView implements SurfaceHolder.Callback {
 	public void surfaceChanged(SurfaceHolder holder, int format, int width,
 			int height) {
 		// TODO Auto-generated method stub
+		
 
 	}
 
 	public void surfaceCreated(SurfaceHolder holder) {
-		myThread.start();
+		worker.start();
 
 	}
 

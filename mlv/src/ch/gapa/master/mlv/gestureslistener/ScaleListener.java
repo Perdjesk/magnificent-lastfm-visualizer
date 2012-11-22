@@ -1,19 +1,18 @@
-package com.example.blublu;
+package ch.gapa.master.mlv.gestureslistener;
 
-import android.util.Log;
 import android.view.ScaleGestureDetector;
+import ch.gapa.master.mlv.view.worker.GraphWorker;
 
 public class ScaleListener extends
 		ScaleGestureDetector.SimpleOnScaleGestureListener {
-	SThread worker;
+	GraphWorker worker;
 
-	public ScaleListener(SThread worker) {
+	public ScaleListener(GraphWorker worker) {
 		this.worker = worker;
 	}
 
 	@Override
 	public boolean onScale(ScaleGestureDetector detector) {
-		Log.v("BLUDSAB", detector.getFocusX()+"/"+detector.getFocusY());
 		if (detector.isInProgress())
 			worker.setScaleFactor(detector.getScaleFactor(),
 					detector.getFocusX(), detector.getFocusY());
