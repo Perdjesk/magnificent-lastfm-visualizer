@@ -20,15 +20,15 @@ public class MainActivity extends Activity {
 		super.onCreate ( savedInstanceState );
 		setContentView ( R.layout.activity_main );
 
-		Caller.getInstance ().setCache ( new MemoryCache () );
-
-		StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder ().permitAll ().build ();
-		StrictMode.setThreadPolicy ( policy );
-		String user = "jystha";
-		Collection<Artist> chart = User.getTopArtists ( user, API_KEY );
-		for ( Artist artist : chart ) {
-			Log.v ( "Artist", artist.getName () );
-		}
+//		Caller.getInstance ().setCache ( new MemoryCache () );
+//
+//		StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder ().permitAll ().build ();
+//		StrictMode.setThreadPolicy ( policy );
+//		String user = "jystha";
+//		Collection<Artist> chart = User.getTopArtists ( user, API_KEY );
+//		for ( Artist artist : chart ) {
+//			Log.v ( "Artist", artist.getName () );
+//		}
 
 		// setContentView(new TouchExampleView(this));
 	}
