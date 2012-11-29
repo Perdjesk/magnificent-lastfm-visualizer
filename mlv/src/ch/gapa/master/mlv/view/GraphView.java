@@ -45,17 +45,14 @@ public class GraphView extends SurfaceView implements SurfaceHolder.Callback {
 
 	@Override
 	public boolean onTouchEvent(MotionEvent ev) {
-		//Log.v("BLU", ev.toString());
 		actionDetector.onTouchEvent(ev);
 		scaleGestureDetector.onTouchEvent(ev);
 		return true;
-
 	}
 
 	public void surfaceChanged(SurfaceHolder holder, int format, int width,
 			int height) {
-		// TODO Auto-generated method stub
-		
+		// TODO Auto-generated method stub		
 
 	}
 

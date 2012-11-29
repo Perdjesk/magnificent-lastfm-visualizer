@@ -15,7 +15,7 @@ public class SimpleGestureListener extends GestureDetector.SimpleOnGestureListen
 	@Override
 	public boolean onSingleTapConfirmed(MotionEvent e) {
 		Log.v("DABLU",(e.getX()+"_"+e.getRawX())+"/"+e.getY()+"_"+e.getRawY());
-		worker.onSingleTap((int)e.getX(), (int)e.getY());
+		worker.onSingleTap(e.getX(), e.getY());
 		return true;
 	}
 	

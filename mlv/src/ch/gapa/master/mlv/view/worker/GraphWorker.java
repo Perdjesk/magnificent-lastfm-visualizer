@@ -7,7 +7,9 @@ import java.util.List;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.Color;
+import android.graphics.Matrix;
 import android.graphics.Paint;
+import android.graphics.Point;
 import android.graphics.drawable.ShapeDrawable;
 import android.graphics.drawable.shapes.OvalShape;
 import android.util.Log;
@@ -22,54 +24,40 @@ public class GraphWorker extends Thread {
 	Paint paintNode = new Paint();
 	Paint paintTextFps = new Paint();
 
-	int cx = 10, cy = 10;
 	float scaleFactor = 1.0f;
-	float dx, dy, lsf;
+	float dx, dy;
 	float focusX, focusY;
 	GraphView view;
 
 	int cwidth, cheight;
+	Point tapPosition = new Point(0,0);
 
 	int fps = 0;
 	int framecount = 0;
 	long prevtime, deltaTime, time;
 	Bitmap bm;
+	
 	List<ShapeDrawable> listShapes = new ArrayList<ShapeDrawable>();
-	int tapx,tapy;
+	ShapeDrawable lastHit = new ShapeDrawable();
 
+	// Public methods section
+	
 	public GraphWorker(SurfaceHolder surfaceHodler, GraphView view) {
 		this.surfaceHodler = surfaceHodler;
-		// paintNode.setAntiAlias(true);
 		paintNode.setColor(Color.YELLOW);
 		paintTextFps.setColor(Color.CYAN);
-
-		bm = Bitmap.createBitmap(10, 10, Bitmap.Config.ARGB_8888);
-		Canvas c = new Canvas(bm);
-		Paint p = new Paint(Paint.ANTI_ALIAS_FLAG);
-		c.drawCircle(5, 5, 5, paintNode);
 	}
 
 	@Override
 	public void run() {
 		updateData();
 		while (true) {
-			hitDetection();
 			updateScreen();
 			fps();
 		}
 	}
-
-	public void fps() {
-		framecount++;
-		time = System.currentTimeMillis();
-		deltaTime = time - prevtime;
-		if (deltaTime > 500) {
-			fps = (int) (framecount / ((double) deltaTime / 1000));
-			framecount = 0;
-			prevtime = time;
-		}
-	}
-
+	
+	
 	public void setScaleFactor(float sc, float focusx, float focusy) {
 		this.scaleFactor *= sc;
 		this.scaleFactor = Math.max(0.001f, Math.min(this.scaleFactor, 100.0f));
@@ -81,15 +69,26 @@ public class GraphWorker extends Thread {
 		this.dx += dx / scaleFactor;
 		this.dy += dy / scaleFactor;
 	}
+
+	public void onSingleTap(float x, float y) {
+		tapPosition.set((int) x, (int) y);
+	}
+
 	
-	public void onSingleTap(int x, int y){
-		this.tapx=(int) (x+dx);
-		this.tapy=(int) (y+dy);		
+	// Private methods section
+	
+	private void fps() {
+		framecount++;
+		time = System.currentTimeMillis();
+		deltaTime = time - prevtime;
+		if (deltaTime > 500) {
+			fps = (int) Math.round((framecount / ((double) deltaTime / 1000)));
+			framecount = 0;
+			prevtime = time;
+		}
 	}
 
-	public void setTapLocation() {
 
-	}
 
 	private void updateData() {
 		for (int i = 0; i < 20; i++)
@@ -97,7 +96,7 @@ public class GraphWorker extends Thread {
 				ShapeDrawable mDrawable = new ShapeDrawable(new OvalShape());
 				mDrawable.getPaint().setAntiAlias(false);
 				mDrawable.getPaint().setColor(Color.MAGENTA);
-				mDrawable.setBounds(i*20, j*20, i*20 + 10, j*20 + 10);
+				mDrawable.setBounds(i * 20, j * 20, i * 20 + 10, j * 20 + 10);
 				listShapes.add(mDrawable);
 			}
 	}
@@ -120,6 +119,8 @@ public class GraphWorker extends Thread {
 		canvas.scale(scaleFactor, scaleFactor, (cwidth) / 2, (cheight) / 2);
 		canvas.translate(-dx, -dy);
 
+		hitDetection(canvas);
+
 		Iterator<ShapeDrawable> it = listShapes.iterator();
 		while (it.hasNext()) {
 			it.next().draw(canvas);
@@ -128,15 +129,47 @@ public class GraphWorker extends Thread {
 
 		surfaceHodler.unlockCanvasAndPost(canvas);
 	}
-	private void hitDetection(){
-		if (tapx==0 && tapy==0) return;
-		Log.v("tap",tapx+" / "+tapy);
+
+	private void hitDetection(Canvas canvas) {
+		// To avoid a boolean we assume that when tap point is at 0,0 no tap
+		// event occurred
+		if (tapPosition.equals(0, 0))
+			return;
+
+		lastHit.getPaint().setColor(Color.MAGENTA);
+		
+		// We get the inverse of the matrix transformation. By default the
+		// matrix transformation map canvas coordinates to screen coordinates,
+		// and we need to
+		// do the inverse operation.
+		Matrix matrixInverse = new Matrix();
+		boolean invertible = canvas.getMatrix().invert(matrixInverse);
+
+		// If the matrix is not invertible you are in trouble and hitDetection
+		// can not continue.
+		if (!invertible) {
+			Log.e("MLV-hitDetection",
+					"A matrix from canvas.getMatrix() is not invertible");
+			return;
+		}
+
+		float[] pointTap = { tapPosition.x, tapPosition.y };
+		matrixInverse.mapPoints(pointTap);
+
 		Iterator<ShapeDrawable> it = listShapes.iterator();
+		ShapeDrawable shape;
 		while (it.hasNext()) {
-			if(it.next().getBounds().contains(tapx, tapy)){
-				Log.v("BLUBL","We have HIIIT");
+			shape = it.next();
+			if (shape.getBounds()
+					.contains((int) pointTap[0], (int) pointTap[1])) {
+				shape.getPaint().setColor(Color.YELLOW);
+				lastHit = shape;
 			}
 		}
-		tapx=0; tapy=0;
+		// We set tapPosition to default when event is handled
+		tapPosition.set(0, 0);
+
 	}
+	
+
 }
