@@ -3,6 +3,7 @@ package ch.gapa.master.mlv.view.worker;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Random;
 
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
@@ -14,6 +15,9 @@ import android.graphics.drawable.ShapeDrawable;
 import android.graphics.drawable.shapes.OvalShape;
 import android.util.Log;
 import android.view.SurfaceHolder;
+import ch.gapa.master.mlv.data.Edge;
+import ch.gapa.master.mlv.data.Graph;
+import ch.gapa.master.mlv.model.ArtistWrapper;
 import ch.gapa.master.mlv.view.GraphView;
 
 public class GraphWorker extends Thread {
@@ -37,8 +41,12 @@ public class GraphWorker extends Thread {
 	long prevtime, deltaTime, time;
 	Bitmap bm;
 	
-	List<ShapeDrawable> listShapes = new ArrayList<ShapeDrawable>();
-	ShapeDrawable lastHit = new ShapeDrawable();
+	Random rand = new Random();
+	
+	Graph<Integer> fullyConnectedGraph;
+	
+	List<ArtistWrapper> listArtist = new ArrayList<ArtistWrapper>();
+	ArtistWrapper lastHit = new ArtistWrapper();
 
 	// Public methods section
 	
@@ -90,15 +98,10 @@ public class GraphWorker extends Thread {
 
 
 
-	private void updateData() {
-		for (int i = 0; i < 20; i++)
-			for (int j = 0; j < 20; j++) {
-				ShapeDrawable mDrawable = new ShapeDrawable(new OvalShape());
-				mDrawable.getPaint().setAntiAlias(false);
-				mDrawable.getPaint().setColor(Color.MAGENTA);
-				mDrawable.setBounds(i * 20, j * 20, i * 20 + 10, j * 20 + 10);
-				listShapes.add(mDrawable);
-			}
+	private void updateData() {		
+		for ( int i = 0; i < 100; i++ ) {
+			listArtist.add(new ArtistWrapper(new Point(rand.nextInt(1000),rand.nextInt(1000))));
+		}		
 	}
 
 	private void updateScreen() {
@@ -109,6 +112,7 @@ public class GraphWorker extends Thread {
 
 		cwidth = canvas.getWidth();
 		cheight = canvas.getHeight();
+
 
 		canvas.save();
 
@@ -121,7 +125,7 @@ public class GraphWorker extends Thread {
 
 		hitDetection(canvas);
 
-		Iterator<ShapeDrawable> it = listShapes.iterator();
+		Iterator<ArtistWrapper> it = listArtist.iterator();
 		while (it.hasNext()) {
 			it.next().draw(canvas);
 		}
@@ -136,7 +140,7 @@ public class GraphWorker extends Thread {
 		if (tapPosition.equals(0, 0))
 			return;
 
-		lastHit.getPaint().setColor(Color.MAGENTA);
+		lastHit.setSelected(false);
 		
 		// We get the inverse of the matrix transformation. By default the
 		// matrix transformation map canvas coordinates to screen coordinates,
@@ -155,21 +159,18 @@ public class GraphWorker extends Thread {
 
 		float[] pointTap = { tapPosition.x, tapPosition.y };
 		matrixInverse.mapPoints(pointTap);
+		Point tapLocation = new Point((int) pointTap[0], (int) pointTap[1]);
 
-		Iterator<ShapeDrawable> it = listShapes.iterator();
-		ShapeDrawable shape;
+		Iterator<ArtistWrapper> it = listArtist.iterator();
+		ArtistWrapper shape;
 		while (it.hasNext()) {
 			shape = it.next();
-			if (shape.getBounds()
-					.contains((int) pointTap[0], (int) pointTap[1])) {
-				shape.getPaint().setColor(Color.YELLOW);
+			if (shape.contains(tapLocation)) {
+				shape.setSelected(true);
 				lastHit = shape;
 			}
 		}
 		// We set tapPosition to default when event is handled
 		tapPosition.set(0, 0);
-
 	}
-	
-
 }
