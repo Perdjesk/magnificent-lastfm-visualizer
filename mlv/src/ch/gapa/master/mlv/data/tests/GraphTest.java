@@ -1,4 +1,4 @@
-package ch.gapa.master.mlv.data.test;
+package ch.gapa.master.mlv.data.tests;
 
 import java.util.Collection;
 
@@ -9,6 +9,7 @@ import org.junit.Test;
 
 import ch.gapa.master.mlv.data.Edge;
 import ch.gapa.master.mlv.data.Graph;
+
 
 public class GraphTest {
 

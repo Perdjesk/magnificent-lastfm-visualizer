@@ -31,6 +31,11 @@ package de.umass.lastfm;
  */
 public class CallException extends RuntimeException {
 
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+
 	public CallException() {
 	}
 

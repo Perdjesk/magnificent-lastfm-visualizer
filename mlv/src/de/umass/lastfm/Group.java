@@ -79,6 +79,7 @@ public class Group {
 		return Chart.getWeeklyChartList("group.getWeeklyChartList", "group", group, apiKey);
 	}
 
+	@SuppressWarnings ( "rawtypes" )
 	public static Collection<Chart> getWeeklyChartListAsCharts(String group, String apiKey) {
 		return Chart.getWeeklyChartListAsCharts("group", group, apiKey);
 	}

@@ -186,7 +186,7 @@ public class User extends ImageHolder {
 	}
 
 	public static Collection<Album> getTopAlbums(String user, Period period, String apiKey) {
-		Result result = Caller.getInstance().call("user.getTopAlbums", apiKey, "user", user, "period", period.getString());
+		Result result = Caller.getInstance().call("user.getTopAlbums", apiKey, "user", user, "period", period.toString());
 		return ResponseBuilder.buildCollection(result, Album.class);
 	}
 
@@ -195,7 +195,7 @@ public class User extends ImageHolder {
 	}
 
 	public static Collection<Artist> getTopArtists(String user, Period period, String apiKey) {
-		Result result = Caller.getInstance().call("user.getTopArtists", apiKey, "user", user, "period", period.getString());
+		Result result = Caller.getInstance().call("user.getTopArtists", apiKey, "user", user, "period", period.toString());
 		return ResponseBuilder.buildCollection(result, Artist.class);
 	}
 
@@ -204,7 +204,7 @@ public class User extends ImageHolder {
 	}
 
 	public static Collection<Track> getTopTracks(String user, Period period, String apiKey) {
-		Result result = Caller.getInstance().call("user.getTopTracks", apiKey, "user", user, "period", period.getString());
+		Result result = Caller.getInstance().call("user.getTopTracks", apiKey, "user", user, "period", period.toString());
 		return ResponseBuilder.buildCollection(result, Track.class);
 	}
 
@@ -260,6 +260,7 @@ public class User extends ImageHolder {
 		return Chart.getWeeklyChartList("user.getWeeklyChartList", "user", user, apiKey);
 	}
 
+	@SuppressWarnings ( "rawtypes" )
 	public static Collection<Chart> getWeeklyChartListAsCharts(String user, String apiKey) {
 		return Chart.getWeeklyChartListAsCharts("user", user, apiKey);
 	}

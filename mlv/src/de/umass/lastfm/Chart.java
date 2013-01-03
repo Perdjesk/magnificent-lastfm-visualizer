@@ -92,7 +92,7 @@ public class Chart<T extends MusicEntry> {
 	 * @param apiKey A Last.fm API key.
 	 * @return a Chart
 	 */
-	@SuppressWarnings("unchecked")
+	@SuppressWarnings({ "unchecked", "rawtypes" })
 	static <T extends MusicEntry> Chart<T> getChart(String method, String target, Map<String, String> params, String from, String to,
 												 	int limit, String apiKey) {
 		if (from != null && to != null) {
@@ -156,7 +156,7 @@ public class Chart<T extends MusicEntry> {
 	 * @param apiKey A Last.fm API key.
 	 * @return a list of available charts as a Collection of Charts
 	 */
-	@SuppressWarnings("unchecked")
+	@SuppressWarnings({ "unchecked", "rawtypes" })
 	static Collection<Chart> getWeeklyChartListAsCharts(String sourceType, String source, String apiKey) {
 		Result result = Caller.getInstance().call(sourceType + ".getWeeklyChartList", apiKey, sourceType, source);
 		if (!result.isSuccessful())

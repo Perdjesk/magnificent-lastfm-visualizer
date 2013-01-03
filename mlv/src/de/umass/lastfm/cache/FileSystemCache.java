@@ -47,7 +47,7 @@ import de.umass.util.StringUtilities;
  *
  * @author Janni Kovacs
  */
-@SuppressWarnings({"ALL"})
+@SuppressWarnings ( "deprecation" )
 public class FileSystemCache extends Cache implements ScrobbleCache {
 
 	private static final String SUBMISSIONS_FILE = "submissions.txt";

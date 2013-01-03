@@ -202,6 +202,7 @@ public class Tag implements Comparable<Tag> {
 		return Chart.getWeeklyChartList("tag.getWeeklyChartList", "tag", tag, apiKey);
 	}
 
+	@SuppressWarnings ( "rawtypes" )
 	public static Collection<Chart> getWeeklyChartListAsCharts(String tag, String apiKey) {
 		return Chart.getWeeklyChartListAsCharts("tag", tag, apiKey);
 	}

@@ -60,7 +60,7 @@ import static de.umass.util.StringUtilities.*;
 public class Caller {
 
 	private static final String PARAM_API_KEY = "api_key";
-	private static final String PARAM_METHOD = "method";
+	//private static final String PARAM_METHOD = "method";
 
 	private static final String DEFAULT_API_ROOT = "http://ws.audioscrobbler.com/2.0/";
 	private static final Caller instance = new Caller();
@@ -373,6 +373,7 @@ public class Caller {
 		return builder.toString();
 	}
 
+	@SuppressWarnings ( "unused" )
 	private String createSignature(Map<String, String> params, String secret) {
 		Set<String> sorted = new TreeSet<String>(params.keySet());
 		StringBuilder builder = new StringBuilder(50);
