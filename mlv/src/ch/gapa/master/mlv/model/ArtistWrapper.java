@@ -49,7 +49,7 @@ public class ArtistWrapper {
 
   public void draw ( final Canvas canvas ) {
     canvas.drawCircle( _position.x, _position.y, RADIUS, _paint );
-    canvas.drawText( DEFAULT_TEXT, _position.x, _position.y + RADIUS + _paint.getTextSize(), _paint );
+    canvas.drawText( _artist.getName(), _position.x, _position.y + RADIUS + _paint.getTextSize(), _paint );
   }
 
   public Status getStatus () {

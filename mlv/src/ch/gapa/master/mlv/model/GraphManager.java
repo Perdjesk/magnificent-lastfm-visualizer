@@ -94,6 +94,10 @@ public final class GraphManager {
     }
     return actions;
   }
+  
+  public void redo() {
+	  // TODO: call redo with an action in parameter
+  }
 
   // TODO: call from somewhere when decision on which action to redo is decided (or size == 1)
   public void redo ( final Action<ArtistWrapper> action ) {

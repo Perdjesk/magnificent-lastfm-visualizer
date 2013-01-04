@@ -12,7 +12,7 @@ import ch.gapa.master.mlv.gestureslistener.SimpleGestureListener;
 import ch.gapa.master.mlv.model.GraphManager;
 import ch.gapa.master.mlv.view.worker.GraphWorker;
 import de.umass.lastfm.Period;
-
+import ch.gapa.master.mlv.model.Constants;
 public class GraphView extends SurfaceView implements SurfaceHolder.Callback {
 
   SurfaceHolder surfaceHolder; // needed fro drawing
@@ -20,21 +20,22 @@ public class GraphView extends SurfaceView implements SurfaceHolder.Callback {
   GestureDetector actionDetector;
   ScaleGestureDetector scaleGestureDetector;
 
-  public GraphView ( Context context ) {
+  
+  public GraphView ( Context context, String user, Period period ) {
     super( context );
-    init( context );
+    init( context,  user,  period );
   }
 
   public GraphView ( Context context, AttributeSet attributeSet ) {
     super( context, attributeSet );
-    init( context );
+    init( context,  Constants.DEFAULT_USER, Constants.DEFAULT_PERIOD);
   }
 
-  public void init ( Context context ) {
+  public void init ( Context context, String user, Period period ) {
     surfaceHolder = getHolder();
     surfaceHolder.addCallback( this );
     // TODO: check if GM must be created somewhere
-    worker = new GraphWorker( surfaceHolder, new GraphManager( "jystha", Period.OVERALL ) );
+    worker = new GraphWorker( surfaceHolder, new GraphManager( user, period ) );
     // TODO: Quand on créer cette SurfaceView, il faut lui passer:
     // * l'id de l'utilisateur
     // * le timeslot des artistes à analyser (cf. GraphManager.TimeRange)
