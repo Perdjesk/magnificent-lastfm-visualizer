@@ -10,7 +10,7 @@ package ch.gapa.master.mlv.data;
  * 
  * <p>
  * The {@link #redo()} method must be called to get the {@code Action} list which then can be redo.
- * 
+ * TODO: Attention, refonte pour execute sur le graphmanager pour qu'il puisse ajouter et remove les elements threadsafe
  */
 public interface Action<T> {
 
