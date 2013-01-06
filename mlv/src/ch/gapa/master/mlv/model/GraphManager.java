@@ -41,16 +41,18 @@ public final class GraphManager {
 
   public void draw ( final Canvas canvas ) {
     synchronized ( LOCK ) {
+    	 // for every edge, draw line
+        for ( Edge<ArtistWrapper> edge : _graph.getEdges() ) {
+          Point pStart = edge.getStart().getPosition();
+          Point pEnd = edge.getEnd().getPosition();
+          canvas.drawLine( pStart.x, pStart.y, pEnd.x, pEnd.y, _edgePaint );
+        }
+        
       // call every node to draw themselves
       for ( ArtistWrapper wrapper : _graph.getVertices() ) {
         wrapper.draw( canvas );
       }
-      // for every edge, draw line
-      for ( Edge<ArtistWrapper> edge : _graph.getEdges() ) {
-        Point pStart = edge.getStart().getPosition();
-        Point pEnd = edge.getEnd().getPosition();
-        canvas.drawLine( pStart.x, pStart.y, pEnd.x, pEnd.y, _edgePaint );
-      }
+     
     }
   }
 
