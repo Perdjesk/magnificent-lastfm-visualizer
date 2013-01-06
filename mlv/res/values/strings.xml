@@ -3,6 +3,6 @@
     <string name="app_name">MLVisu</string>
     <string name="hello_world">Hello world!</string>
     <string name="menu_settings">Settings</string>
-    <string name="title_activity_main">MLVisuActivity</string>
+    <string name="title_activity_main">MLVisu</string>
 
 </resources>
