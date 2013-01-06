@@ -35,7 +35,7 @@ public final class GraphManager {
     Action<ArtistWrapper> action = ActionFactory.createFirstAction( username, period );
     _tree = new Tree<Action<ArtistWrapper>>( action );
     action.execute( _graph );
-    _edgePaint.setAntiAlias( true );
+    //_edgePaint.setAntiAlias( true );
     _edgePaint.setColor( Color.WHITE );
   }
 

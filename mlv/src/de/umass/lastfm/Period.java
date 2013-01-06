@@ -21,8 +21,8 @@
 package de.umass.lastfm;
 
 public enum Period {
-  OVERALL ( "overall" ), WEEK ( "7 day" ), ONE_MONTH ( "1 month" ), THREE_MONTHS ( "3 month" ), SIX_MONTHS ( "6 month" ), TWELVE_MONTHS (
-      "12 month" );
+  OVERALL ( "overall" ), WEEK ( "7day" ), ONE_MONTH ( "1month" ), THREE_MONTHS ( "3month" ), SIX_MONTHS ( "6month" ), TWELVE_MONTHS (
+      "12month" );
 
   private String _toString;
 

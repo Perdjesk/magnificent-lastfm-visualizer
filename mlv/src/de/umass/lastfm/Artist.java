@@ -36,7 +36,8 @@ import de.umass.xml.DomElement;
 
 /**
  * Bean that contains artist information.<br/>
- * This class contains static methods that executes API methods relating to artists.<br/>
+ * This class contains static methods that executes API methods relating to
+ * artists.<br/>
  * Method names are equivalent to the last.fm API method names.
  * 
  * @author Janni Kovacs
@@ -47,24 +48,27 @@ public class Artist extends MusicEntry {
 
 	private Collection<Artist> similar = new ArrayList<Artist>();
 
-	protected Artist ( String name, String url ) {
-		super( name, url );
+	protected Artist(String name, String url) {
+		super(name, url);
 	}
 
-	protected Artist ( String name, String url, String mbid, int playcount, int listeners, boolean streamable ) {
-		super( name, url, mbid, playcount, listeners, streamable );
+	protected Artist(String name, String url, String mbid, int playcount,
+			int listeners, boolean streamable) {
+		super(name, url, mbid, playcount, listeners, streamable);
 	}
 
 	/**
-	 * Returns a list of similar <code>Artist</code>s. Note that this method does not retrieve this list from the server
-	 * but instead returns the result of an <code>artist.getInfo</code> call.<br/>
-	 * If you need to retrieve similar artists to a specified artist use the {@link #getSimilar(String, String)} method.
+	 * Returns a list of similar <code>Artist</code>s. Note that this method
+	 * does not retrieve this list from the server but instead returns the
+	 * result of an <code>artist.getInfo</code> call.<br/>
+	 * If you need to retrieve similar artists to a specified artist use the
+	 * {@link #getSimilar(String, String)} method.
 	 * 
 	 * @return list of similar artists
 	 * @see #getSimilar(String, String)
 	 * @see #getSimilar(String, int, String)
 	 */
-	public Collection<Artist> getSimilar () {
+	public Collection<Artist> getSimilar() {
 		return similar;
 	}
 
@@ -77,8 +81,8 @@ public class Artist extends MusicEntry {
 	 *            The API key
 	 * @return detailed artist info
 	 */
-	public static Artist getInfo ( String artistOrMbid, String apiKey ) {
-		return getInfo( artistOrMbid, null, null, apiKey );
+	public static Artist getInfo(String artistOrMbid, String apiKey) {
+		return getInfo(artistOrMbid, null, null, apiKey);
 	}
 
 	/**
@@ -87,14 +91,16 @@ public class Artist extends MusicEntry {
 	 * @param artistOrMbid
 	 *            Name of the artist or an mbid
 	 * @param username
-	 *            The username for the context of the request, or <code>null</code>. If supplied, the user's playcount
-	 *            for this artist is included in the response
+	 *            The username for the context of the request, or
+	 *            <code>null</code>. If supplied, the user's playcount for this
+	 *            artist is included in the response
 	 * @param apiKey
 	 *            The API key
 	 * @return detailed artist info
 	 */
-	public static Artist getInfo ( String artistOrMbid, String username, String apiKey ) {
-		return getInfo( artistOrMbid, null, username, apiKey );
+	public static Artist getInfo(String artistOrMbid, String username,
+			String apiKey) {
+		return getInfo(artistOrMbid, null, username, apiKey);
 	}
 
 	/**
@@ -105,29 +111,33 @@ public class Artist extends MusicEntry {
 	 * @param locale
 	 *            The language to fetch info in, or <code>null</code>
 	 * @param username
-	 *            The username for the context of the request, or <code>null</code>. If supplied, the user's playcount
-	 *            for this artist is included in the response
+	 *            The username for the context of the request, or
+	 *            <code>null</code>. If supplied, the user's playcount for this
+	 *            artist is included in the response
 	 * @param apiKey
 	 *            The API key
 	 * @return detailed artist info
 	 */
-	public static Artist getInfo ( String artistOrMbid, Locale locale, String username, String apiKey ) {
+	public static Artist getInfo(String artistOrMbid, Locale locale,
+			String username, String apiKey) {
 		Map<String, String> params = new HashMap<String, String>();
-		if ( StringUtilities.isMbid( artistOrMbid ) ) {
-			params.put( "mbid", artistOrMbid );
+		if (StringUtilities.isMbid(artistOrMbid)) {
+			params.put("mbid", artistOrMbid);
 		} else {
-			params.put( "artist", artistOrMbid );
+			params.put("artist", artistOrMbid);
 		}
-		if ( locale != null && locale.getLanguage().length() != 0 ) {
-			params.put( "lang", locale.getLanguage() );
+		if (locale != null && locale.getLanguage().length() != 0) {
+			params.put("lang", locale.getLanguage());
 		}
-		MapUtilities.nullSafePut( params, "username", username );
-		Result result = Caller.getInstance().call( "artist.getInfo", apiKey, params );
-		return ResponseBuilder.buildItem( result, Artist.class );
+		MapUtilities.nullSafePut(params, "username", username);
+		Result result = Caller.getInstance().call("artist.getInfo", apiKey,
+				params);
+		return ResponseBuilder.buildItem(result, Artist.class);
 	}
 
 	/**
-	 * Calls {@link #getSimilar(String, int, String)} with the default limit of 100.
+	 * Calls {@link #getSimilar(String, int, String)} with the default limit of
+	 * 100.
 	 * 
 	 * @param artist
 	 *            Artist's name
@@ -136,8 +146,8 @@ public class Artist extends MusicEntry {
 	 * @return similar artists
 	 * @see #getSimilar(String, int, String)
 	 */
-	public static Collection<Artist> getSimilar ( String artist, String apiKey ) {
-		return getSimilar( artist, 100, apiKey );
+	public static Collection<Artist> getSimilar(String artist, String apiKey) {
+		return getSimilar(artist, 100, apiKey);
 	}
 
 	/**
@@ -151,14 +161,16 @@ public class Artist extends MusicEntry {
 	 *            The API key
 	 * @return similar artists
 	 */
-	public static Collection<Artist> getSimilar ( String artist, int limit, String apiKey ) {
-		Result result = Caller.getInstance().call( "artist.getSimilar", apiKey, "artist", artist, "limit",
-				String.valueOf( limit ) );
-		return ResponseBuilder.buildCollection( result, Artist.class );
+	public static Collection<Artist> getSimilar(String artist, int limit,
+			String apiKey) {
+		Result result = Caller.getInstance().call("artist.getSimilar", apiKey,
+				"artist", artist, "limit", String.valueOf(limit));
+		return ResponseBuilder.buildCollection(result, Artist.class);
 	}
 
 	/**
-	 * Searches for an artist and returns a <code>Collection</code> of possible matches.
+	 * Searches for an artist and returns a <code>Collection</code> of possible
+	 * matches.
 	 * 
 	 * @param name
 	 *            The artist name to look up
@@ -166,12 +178,14 @@ public class Artist extends MusicEntry {
 	 *            The API key
 	 * @return a list of possible matches
 	 */
-	public static Collection<Artist> search ( String name, String apiKey ) {
-		Result result = Caller.getInstance().call( "artist.search", apiKey, "artist", name );
-		Collection<DomElement> children = result.getContentElement().getChild( "artistmatches" ).getChildren( "artist" );
-		List<Artist> list = new ArrayList<Artist>( children.size() );
-		for ( DomElement c : children ) {
-			list.add( FACTORY.createItemFromElement( c ) );
+	public static Collection<Artist> search(String name, String apiKey) {
+		Result result = Caller.getInstance().call("artist.search", apiKey,
+				"artist", name);
+		Collection<DomElement> children = result.getContentElement()
+				.getChild("artistmatches").getChildren("artist");
+		List<Artist> list = new ArrayList<Artist>(children.size());
+		for (DomElement c : children) {
+			list.add(FACTORY.createItemFromElement(c));
 		}
 		return list;
 	}
@@ -185,9 +199,10 @@ public class Artist extends MusicEntry {
 	 *            The API key
 	 * @return list of top albums
 	 */
-	public static Collection<Album> getTopAlbums ( String artist, String apiKey ) {
-		Result result = Caller.getInstance().call( "artist.getTopAlbums", apiKey, "artist", artist );
-		return ResponseBuilder.buildCollection( result, Album.class );
+	public static Collection<Album> getTopAlbums(String artist, String apiKey) {
+		Result result = Caller.getInstance().call("artist.getTopAlbums",
+				apiKey, "artist", artist);
+		return ResponseBuilder.buildCollection(result, Album.class);
 	}
 
 	/**
@@ -199,9 +214,10 @@ public class Artist extends MusicEntry {
 	 *            The API key
 	 * @return list of top fans
 	 */
-	public static Collection<User> getTopFans ( String artist, String apiKey ) {
-		Result result = Caller.getInstance().call( "artist.getTopFans", apiKey, "artist", artist );
-		return ResponseBuilder.buildCollection( result, User.class );
+	public static Collection<User> getTopFans(String artist, String apiKey) {
+		Result result = Caller.getInstance().call("artist.getTopFans", apiKey,
+				"artist", artist);
+		return ResponseBuilder.buildCollection(result, User.class);
 	}
 
 	/**
@@ -213,9 +229,10 @@ public class Artist extends MusicEntry {
 	 *            The API key
 	 * @return list of top tags
 	 */
-	public static Collection<Tag> getTopTags ( String artist, String apiKey ) {
-		Result result = Caller.getInstance().call( "artist.getTopTags", apiKey, "artist", artist );
-		return ResponseBuilder.buildCollection( result, Tag.class );
+	public static Collection<Tag> getTopTags(String artist, String apiKey) {
+		Result result = Caller.getInstance().call("artist.getTopTags", apiKey,
+				"artist", artist);
+		return ResponseBuilder.buildCollection(result, Tag.class);
 	}
 
 	/**
@@ -227,9 +244,10 @@ public class Artist extends MusicEntry {
 	 *            A Last.fm API key.
 	 * @return list of top tracks
 	 */
-	public static Collection<Track> getTopTracks ( String artist, String apiKey ) {
-		Result result = Caller.getInstance().call( "artist.getTopTracks", apiKey, "artist", artist );
-		return ResponseBuilder.buildCollection( result, Track.class );
+	public static Collection<Track> getTopTracks(String artist, String apiKey) {
+		Result result = Caller.getInstance().call("artist.getTopTracks",
+				apiKey, "artist", artist);
+		return ResponseBuilder.buildCollection(result, Track.class);
 	}
 
 	/**
@@ -238,13 +256,15 @@ public class Artist extends MusicEntry {
 	 * @param artist
 	 *            The artist name in question.
 	 * @param tags
-	 *            A comma delimited list of user supplied tags to apply to this artist. Accepts a maximum of 10 tags.
+	 *            A comma delimited list of user supplied tags to apply to this
+	 *            artist. Accepts a maximum of 10 tags.
 	 * @param session
 	 *            A Session instance
 	 * @return the result of the operation
 	 */
-	public static Result addTags ( String artist, String tags, Session session ) {
-		return Caller.getInstance().call( "artist.addTags", session, "artist", artist, "tags", tags );
+	public static Result addTags(String artist, String tags, Session session) {
+		return Caller.getInstance().call("artist.addTags", session, "artist",
+				artist, "tags", tags);
 	}
 
 	/**
@@ -258,8 +278,9 @@ public class Artist extends MusicEntry {
 	 *            A Session instance
 	 * @return the result of the operation
 	 */
-	public static Result removeTag ( String artist, String tag, Session session ) {
-		return Caller.getInstance().call( "artist.removeTag", session, "artist", artist, "tag", tag );
+	public static Result removeTag(String artist, String tag, Session session) {
+		return Caller.getInstance().call("artist.removeTag", session, "artist",
+				artist, "tag", tag);
 	}
 
 	/**
@@ -268,16 +289,18 @@ public class Artist extends MusicEntry {
 	 * @param artist
 	 *            The artist to share.
 	 * @param recipients
-	 *            A comma delimited list of email addresses or Last.fm usernames. Maximum is 10.
+	 *            A comma delimited list of email addresses or Last.fm
+	 *            usernames. Maximum is 10.
 	 * @param message
 	 *            An optional message to send with the recommendation.
 	 * @param session
 	 *            A Session instance
 	 * @return the Result of the operation
 	 */
-	public static Result share ( String artist, String recipients, String message, Session session ) {
-		return Caller.getInstance().call( "artist.share", session, "artist", artist, "recipient", recipients,
-				"message", message );
+	public static Result share(String artist, String recipients,
+			String message, Session session) {
+		return Caller.getInstance().call("artist.share", session, "artist",
+				artist, "recipient", recipients, "message", message);
 	}
 
 	/**
@@ -289,13 +312,15 @@ public class Artist extends MusicEntry {
 	 *            A Session instance
 	 * @return a list of tags
 	 */
-	public static Collection<String> getTags ( String artist, Session session ) {
-		Result result = Caller.getInstance().call( "artist.getTags", session, "artist", artist );
-		if ( !result.isSuccessful() ) return Collections.emptyList();
+	public static Collection<String> getTags(String artist, Session session) {
+		Result result = Caller.getInstance().call("artist.getTags", session,
+				"artist", artist);
+		if (!result.isSuccessful())
+			return Collections.emptyList();
 		DomElement element = result.getContentElement();
 		Collection<String> tags = new ArrayList<String>();
-		for ( DomElement domElement : element.getChildren( "tag" ) ) {
-			tags.add( domElement.getChildText( "name" ) );
+		for (DomElement domElement : element.getChildren("tag")) {
+			tags.add(domElement.getChildText("name"));
 		}
 		return tags;
 	}
@@ -309,8 +334,9 @@ public class Artist extends MusicEntry {
 	 *            A Last.fm API key
 	 * @return a list of events
 	 */
-	public static PaginatedResult<Event> getEvents ( String artistOrMbid, String apiKey ) {
-		return getEvents( artistOrMbid, false, -1, -1, apiKey );
+	public static PaginatedResult<Event> getEvents(String artistOrMbid,
+			String apiKey) {
+		return getEvents(artistOrMbid, false, -1, -1, apiKey);
 	}
 
 	/**
@@ -328,39 +354,46 @@ public class Artist extends MusicEntry {
 	 *            A Last.fm API key
 	 * @return a list of events
 	 */
-	public static PaginatedResult<Event> getEvents ( String artistOrMbid, boolean festivalsOnly, int page, int limit,
-			String apiKey ) {
+	public static PaginatedResult<Event> getEvents(String artistOrMbid,
+			boolean festivalsOnly, int page, int limit, String apiKey) {
 		Map<String, String> params = new HashMap<String, String>();
-		if ( StringUtilities.isMbid( artistOrMbid ) ) {
-			params.put( "mbid", artistOrMbid );
+		if (StringUtilities.isMbid(artistOrMbid)) {
+			params.put("mbid", artistOrMbid);
 		} else {
-			params.put( "artist", artistOrMbid );
+			params.put("artist", artistOrMbid);
 		}
-		MapUtilities.nullSafePut( params, "page", page );
-		MapUtilities.nullSafePut( params, "limit", limit );
-		if ( festivalsOnly ) params.put( "festivalsonly", "1" );
-		Result result = Caller.getInstance().call( "artist.getEvents", apiKey, params );
-		return ResponseBuilder.buildPaginatedResult( result, Event.class );
+		MapUtilities.nullSafePut(params, "page", page);
+		MapUtilities.nullSafePut(params, "limit", limit);
+		if (festivalsOnly)
+			params.put("festivalsonly", "1");
+		Result result = Caller.getInstance().call("artist.getEvents", apiKey,
+				params);
+		return ResponseBuilder.buildPaginatedResult(result, Event.class);
 	}
 
 	/**
-	 * Get a paginated list of all the events this artist has played at in the past.
+	 * Get a paginated list of all the events this artist has played at in the
+	 * past.
 	 * 
 	 * @param artistOrMbid
-	 *            The name of the artist you would like to fetch event listings for
+	 *            The name of the artist you would like to fetch event listings
+	 *            for
 	 * @param apiKey
 	 *            A Last.fm API key
 	 * @return a list of past events
 	 */
-	public static PaginatedResult<Event> getPastEvents ( String artistOrMbid, String apiKey ) {
-		return getPastEvents( artistOrMbid, false, -1, -1, apiKey );
+	public static PaginatedResult<Event> getPastEvents(String artistOrMbid,
+			String apiKey) {
+		return getPastEvents(artistOrMbid, false, -1, -1, apiKey);
 	}
 
 	/**
-	 * Get a paginated list of all the events this artist has played at in the past.
+	 * Get a paginated list of all the events this artist has played at in the
+	 * past.
 	 * 
 	 * @param artistOrMbid
-	 *            The name of the artist you would like to fetch event listings for
+	 *            The name of the artist you would like to fetch event listings
+	 *            for
 	 * @param festivalsOnly
 	 *            Whether only festivals should be returned, or all events
 	 * @param page
@@ -371,19 +404,21 @@ public class Artist extends MusicEntry {
 	 *            A Last.fm API key
 	 * @return a list of past events
 	 */
-	public static PaginatedResult<Event> getPastEvents ( String artistOrMbid, boolean festivalsOnly, int page,
-			int limit, String apiKey ) {
+	public static PaginatedResult<Event> getPastEvents(String artistOrMbid,
+			boolean festivalsOnly, int page, int limit, String apiKey) {
 		Map<String, String> params = new HashMap<String, String>();
-		if ( StringUtilities.isMbid( artistOrMbid ) ) {
-			params.put( "mbid", artistOrMbid );
+		if (StringUtilities.isMbid(artistOrMbid)) {
+			params.put("mbid", artistOrMbid);
 		} else {
-			params.put( "artist", artistOrMbid );
+			params.put("artist", artistOrMbid);
 		}
-		MapUtilities.nullSafePut( params, "page", page );
-		MapUtilities.nullSafePut( params, "limit", limit );
-		if ( festivalsOnly ) params.put( "festivalsonly", "1" );
-		Result result = Caller.getInstance().call( "artist.getPastEvents", apiKey, params );
-		return ResponseBuilder.buildPaginatedResult( result, Event.class );
+		MapUtilities.nullSafePut(params, "page", page);
+		MapUtilities.nullSafePut(params, "limit", limit);
+		if (festivalsOnly)
+			params.put("festivalsonly", "1");
+		Result result = Caller.getInstance().call("artist.getPastEvents",
+				apiKey, params);
+		return ResponseBuilder.buildPaginatedResult(result, Event.class);
 	}
 
 	/**
@@ -395,8 +430,9 @@ public class Artist extends MusicEntry {
 	 *            A Last.fm API key
 	 * @return a list of {@link Image}s
 	 */
-	public static PaginatedResult<Image> getImages ( String artistOrMbid, String apiKey ) {
-		return getImages( artistOrMbid, -1, -1, apiKey );
+	public static PaginatedResult<Image> getImages(String artistOrMbid,
+			String apiKey) {
+		return getImages(artistOrMbid, -1, -1, apiKey);
 	}
 
 	/**
@@ -412,17 +448,19 @@ public class Artist extends MusicEntry {
 	 *            A Last.fm API key
 	 * @return a list of {@link Image}s
 	 */
-	public static PaginatedResult<Image> getImages ( String artistOrMbid, int page, int limit, String apiKey ) {
+	public static PaginatedResult<Image> getImages(String artistOrMbid,
+			int page, int limit, String apiKey) {
 		Map<String, String> params = new HashMap<String, String>();
-		if ( StringUtilities.isMbid( artistOrMbid ) ) {
-			params.put( "mbid", artistOrMbid );
+		if (StringUtilities.isMbid(artistOrMbid)) {
+			params.put("mbid", artistOrMbid);
 		} else {
-			params.put( "artist", artistOrMbid );
+			params.put("artist", artistOrMbid);
 		}
-		MapUtilities.nullSafePut( params, "page", page );
-		MapUtilities.nullSafePut( params, "limit", limit );
-		Result result = Caller.getInstance().call( "artist.getImages", apiKey, params );
-		return ResponseBuilder.buildPaginatedResult( result, Image.class );
+		MapUtilities.nullSafePut(params, "page", page);
+		MapUtilities.nullSafePut(params, "limit", limit);
+		Result result = Caller.getInstance().call("artist.getImages", apiKey,
+				params);
+		return ResponseBuilder.buildPaginatedResult(result, Image.class);
 	}
 
 	/**
@@ -436,14 +474,16 @@ public class Artist extends MusicEntry {
 	 *            A Session instance
 	 * @return the result of the operation
 	 */
-	public static Result shout ( String artist, String message, Session session ) {
-		return Caller.getInstance().call( "artist.shout", session, "artist", artist, "message", message );
+	public static Result shout(String artist, String message, Session session) {
+		return Caller.getInstance().call("artist.shout", session, "artist",
+				artist, "message", message);
 	}
 
 	/**
-	 * Use the last.fm corrections data to check whether the supplied artist has a correction to a canonical artist.
-	 * This method returns a new {@link Artist} object containing the corrected data, or <code>null</code> if the
-	 * supplied Artist was not found.
+	 * Use the last.fm corrections data to check whether the supplied artist has
+	 * a correction to a canonical artist. This method returns a new
+	 * {@link Artist} object containing the corrected data, or <code>null</code>
+	 * if the supplied Artist was not found.
 	 * 
 	 * @param artist
 	 *            The artist name to correct
@@ -451,13 +491,17 @@ public class Artist extends MusicEntry {
 	 *            A Last.fm API key
 	 * @return a new {@link Artist}, or <code>null</code>
 	 */
-	public static Artist getCorrection ( String artist, String apiKey ) {
-		Result result = Caller.getInstance().call( "artist.getCorrection", apiKey, "artist", artist );
-		if ( !result.isSuccessful() ) return null;
-		DomElement correctionElement = result.getContentElement().getChild( "correction" );
-		if ( correctionElement == null ) return new Artist( artist, null );
-		DomElement artistElem = correctionElement.getChild( "artist" );
-		return FACTORY.createItemFromElement( artistElem );
+	public static Artist getCorrection(String artist, String apiKey) {
+		Result result = Caller.getInstance().call("artist.getCorrection",
+				apiKey, "artist", artist);
+		if (!result.isSuccessful())
+			return null;
+		DomElement correctionElement = result.getContentElement().getChild(
+				"correction");
+		if (correctionElement == null)
+			return new Artist(artist, null);
+		DomElement artistElem = correctionElement.getChild("artist");
+		return FACTORY.createItemFromElement(artistElem);
 	}
 
 	/**
@@ -469,8 +513,9 @@ public class Artist extends MusicEntry {
 	 *            A Last.fm API key.
 	 * @return a page of <code>Shout</code>s
 	 */
-	public static PaginatedResult<Shout> getShouts ( String artistOrMbid, String apiKey ) {
-		return getShouts( artistOrMbid, -1, -1, apiKey );
+	public static PaginatedResult<Shout> getShouts(String artistOrMbid,
+			String apiKey) {
+		return getShouts(artistOrMbid, -1, -1, apiKey);
 	}
 
 	/**
@@ -484,8 +529,9 @@ public class Artist extends MusicEntry {
 	 *            A Last.fm API key.
 	 * @return a page of <code>Shout</code>s
 	 */
-	public static PaginatedResult<Shout> getShouts ( String artistOrMbid, int page, String apiKey ) {
-		return getShouts( artistOrMbid, page, -1, apiKey );
+	public static PaginatedResult<Shout> getShouts(String artistOrMbid,
+			int page, String apiKey) {
+		return getShouts(artistOrMbid, page, -1, apiKey);
 	}
 
 	/**
@@ -496,35 +542,38 @@ public class Artist extends MusicEntry {
 	 * @param page
 	 *            The page number to fetch
 	 * @param limit
-	 *            An integer used to limit the number of shouts returned per page or -1 for default
+	 *            An integer used to limit the number of shouts returned per
+	 *            page or -1 for default
 	 * @param apiKey
 	 *            A Last.fm API key.
 	 * @return a page of <code>Shout</code>s
 	 */
-	public static PaginatedResult<Shout> getShouts ( String artistOrMbid, int page, int limit, String apiKey ) {
+	public static PaginatedResult<Shout> getShouts(String artistOrMbid,
+			int page, int limit, String apiKey) {
 		Map<String, String> params = new HashMap<String, String>();
-		if ( StringUtilities.isMbid( artistOrMbid ) ) {
-			params.put( "mbid", artistOrMbid );
+		if (StringUtilities.isMbid(artistOrMbid)) {
+			params.put("mbid", artistOrMbid);
 		} else {
-			params.put( "artist", artistOrMbid );
+			params.put("artist", artistOrMbid);
 		}
-		MapUtilities.nullSafePut( params, "limit", limit );
-		MapUtilities.nullSafePut( params, "page", page );
-		Result result = Caller.getInstance().call( "artist.getShouts", apiKey, params );
-		return ResponseBuilder.buildPaginatedResult( result, Shout.class );
+		MapUtilities.nullSafePut(params, "limit", limit);
+		MapUtilities.nullSafePut(params, "page", page);
+		Result result = Caller.getInstance().call("artist.getShouts", apiKey,
+				params);
+		return ResponseBuilder.buildPaginatedResult(result, Shout.class);
 	}
 
 	private static class ArtistFactory implements ItemFactory<Artist> {
 
-		public Artist createItemFromElement ( DomElement element ) {
-			Artist artist = new Artist( null, null );
-			MusicEntry.loadStandardInfo( artist, element );
+		public Artist createItemFromElement(DomElement element) {
+			Artist artist = new Artist(null, null);
+			MusicEntry.loadStandardInfo(artist, element);
 			// similar artists
-			DomElement similar = element.getChild( "similar" );
-			if ( similar != null ) {
-				Collection<DomElement> children = similar.getChildren( "artist" );
-				for ( DomElement child : children ) {
-					artist.similar.add( createItemFromElement( child ) );
+			DomElement similar = element.getChild("similar");
+			if (similar != null) {
+				Collection<DomElement> children = similar.getChildren("artist");
+				for (DomElement child : children) {
+					artist.similar.add(createItemFromElement(child));
 				}
 			}
 			return artist;
@@ -532,7 +581,8 @@ public class Artist extends MusicEntry {
 	}
 
 	/**
-	 * Returns whether given objects equals to self Artist object. Override for {@link Graph} purposes.
+	 * Returns whether given objects equals to self Artist object. Override for
+	 * {@link Graph} purposes.
 	 * 
 	 * @param obj
 	 *            the object that may equal itself
@@ -540,21 +590,18 @@ public class Artist extends MusicEntry {
 	 * @see Object#equals(Object)
 	 */
 	@Override
-	public boolean equals ( final Object obj ) {
-		if ( this == obj ) {
+	public boolean equals(final Object obj) {
+		if (this == obj) {
 			return true;
 		}
-		if ( !( obj instanceof Artist ) ) {
+		if (!(obj instanceof Artist)) {
 			return false;
 		}
+
 		Artist artist = (Artist) obj;
 		// name, url, mbid, playcount, listeners, streamable
-		boolean equal = name.equals( artist.name );
-		equal &= url.equals( artist.url );
-		equal &= mbid.equals( artist.mbid );
-		equal &= playcount == artist.playcount;
-		equal &= listeners == artist.listeners;
-		equal &= streamable == artist.streamable;
+		boolean equal = name.equals(artist.name);
+		equal &= mbid.equals(artist.mbid);
 		return equal;
 	}
 
@@ -565,20 +612,20 @@ public class Artist extends MusicEntry {
 	 * @see Object#hashCode()
 	 */
 	@Override
-	public int hashCode () {
+	public int hashCode() {
 		int hash = 7;
 		// name, url, mbid, playcount, listeners, streamable
-		hash = ( 37 * hash ) + ( name != null ? name.hashCode() : 0 );
-		hash = ( 37 * hash ) + ( url != null ? url.hashCode() : 0 );
-		hash = ( 37 * hash ) + ( mbid != null ? url.hashCode() : 0 );
-		hash = ( 37 * hash ) + playcount;
-		hash = ( 37 * hash ) + listeners;
-		hash = ( 37 * hash ) + ( streamable ? 2 ^ 3 : 1 );
+		hash = (37 * hash) + (name != null ? name.hashCode() : 0);
+		hash = (37 * hash) + (url != null ? url.hashCode() : 0);
+		hash = (37 * hash) + (mbid != null ? url.hashCode() : 0);
+		hash = (37 * hash) + playcount;
+		hash = (37 * hash) + listeners;
+		hash = (37 * hash) + (streamable ? 2 ^ 3 : 1);
 		return 0;
 	}
 
 	@Override
-	public String toString () {
+	public String toString() {
 		return name;
 	}
 }
