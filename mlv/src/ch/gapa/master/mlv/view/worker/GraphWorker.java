@@ -10,6 +10,7 @@ import android.util.Log;
 import android.view.SurfaceHolder;
 import ch.gapa.master.mlv.data.BusProvider;
 import ch.gapa.master.mlv.model.GraphManager;
+import ch.gapa.master.mlv.model.GraphManager.TapType;
 import ch.gapa.master.mlv.view.TapEvent;
 
 public class GraphWorker extends Thread {
@@ -21,7 +22,7 @@ public class GraphWorker extends Thread {
 	private Canvas canvas;
 
 	private final Paint paintTextFps = new Paint();
-	
+
 	private final Paint paintDoButton = new Paint();
 
 	private float scaleFactor = 1.0f;
@@ -38,6 +39,8 @@ public class GraphWorker extends Thread {
 
 	private long prevtime, deltaTime, time;
 	Rect undoButton, redoButton;
+
+	TapType tapType;
 
 	// Public methods section
 
@@ -69,6 +72,16 @@ public class GraphWorker extends Thread {
 
 	public void onSingleTap(float x, float y) {
 		tapPosition.set((int) x, (int) y);
+		tapType = TapType.SINGLE;
+	}
+	
+	public void onLongPress(){
+		_manager.resetAlphas();
+	}
+
+	public void onDoubleTap(float x, float y) {
+		tapPosition.set((int) x, (int) y);
+		tapType = TapType.DOUBLE;
 	}
 
 	// Private methods section
@@ -101,9 +114,9 @@ public class GraphWorker extends Thread {
 		undoButton = new Rect(0, cheight - 50, 50, cheight);
 		redoButton = new Rect(cwidth - 50, cheight - 50, cwidth, cheight);
 		canvas.drawRect(undoButton, paintDoButton);
-		canvas.drawText("UNDO", 10, cheight-25, paintTextFps);
+		canvas.drawText("UNDO", 10, cheight - 25, paintTextFps);
 		canvas.drawRect(redoButton, paintDoButton);
-		canvas.drawText("REDO", cwidth - 40, cheight-25, paintTextFps);
+		canvas.drawText("REDO", cwidth - 40, cheight - 25, paintTextFps);
 
 		canvas.scale(scaleFactor, scaleFactor, (cwidth) / 2, (cheight) / 2);
 		canvas.translate(-dx, -dy);
@@ -153,9 +166,15 @@ public class GraphWorker extends Thread {
 		matrixInverse.mapPoints(pointTap);
 		Point tapLocation = new Point((int) pointTap[0], (int) pointTap[1]);
 
-
 		// Generate Event
-		BusProvider.INSTANCE.getBus().post(new TapEvent(tapLocation));
+		switch (tapType) {
+		case SINGLE:
+			BusProvider.INSTANCE.getBus().post(new TapEvent(tapLocation));
+			break;
+		case DOUBLE:
+			_manager.doubleTap(new TapEvent(tapLocation));
+
+		}
 
 		// We set tapPosition to default when event is handled
 		tapPosition.set(0, 0);

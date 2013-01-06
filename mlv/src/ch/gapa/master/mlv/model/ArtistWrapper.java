@@ -37,8 +37,8 @@ public class ArtistWrapper {
 		_paintText.setTextAlign(Paint.Align.CENTER);
 
 		defineColor();
-//		_position.x = rand.nextInt(1000);
-//		_position.y = rand.nextInt(1000);
+		_position.x = rand.nextInt(1000);
+		_position.y = rand.nextInt(1000);
 
 	}
 
@@ -54,6 +54,10 @@ public class ArtistWrapper {
 				break;
 			}
 		}
+	}
+	
+	public boolean isFaded(){
+		return _paint.getAlpha()<255;
 	}
 	
 	public void setAlpha(int x){
