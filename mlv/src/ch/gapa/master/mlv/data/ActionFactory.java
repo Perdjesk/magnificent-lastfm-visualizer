@@ -1,23 +1,26 @@
 package ch.gapa.master.mlv.data;
 
 import static ch.gapa.master.mlv.model.Constants.API_KEY;
+import static ch.gapa.master.mlv.model.Constants.GRAPH_LIMIT;
+import static ch.gapa.master.mlv.model.Constants.GRAPH_LIMIT_INIT;
 
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.concurrent.Callable;
-import java.util.concurrent.FutureTask;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 import ch.gapa.master.mlv.model.ArtistWrapper;
 import ch.gapa.master.mlv.model.ArtistWrapper.Status;
+import ch.gapa.master.mlv.model.GraphManager;
 import de.umass.lastfm.Artist;
 import de.umass.lastfm.Period;
 import de.umass.lastfm.User;
 
 public final class ActionFactory {
 
-  private static final int GRAPH_LIMIT = 3;
-  private static final int GRAPH_LIMIT_INIT = 5;
+  private static final ExecutorService _executor = Executors.newFixedThreadPool( 1 );
 
   private ActionFactory () {
     throw new AssertionError( "This class must not be initiated!" );
@@ -42,40 +45,39 @@ public final class ActionFactory {
      * {@link Artist} created once action is executed.
      */
     private Set<ArtistWrapper> _vertices;
+    private Set<Edge<ArtistWrapper>> _edges;
 
     private ArtistAction ( final ArtistWrapper artist ) {
       this._artist = artist;
+      _vertices = new HashSet<ArtistWrapper>();
+      _edges = new HashSet<Edge<ArtistWrapper>>();
     }
 
     /**
 		 * 
 		 */
-    public void execute ( final Graph<ArtistWrapper> graph ) {
+    public void execute ( final Graph<ArtistWrapper> graph, final GraphManager manager ) {
       // Do the action
       if ( !done ) {
-        final Callable<Set<ArtistWrapper>> DO = new Callable<Set<ArtistWrapper>>() {
+        final Callable<Void> DO = new Callable<Void>() {
 
-          public Set<ArtistWrapper> call () throws Exception {
+          public Void call () throws Exception {
             done = true;
             Collection<Artist> similars = Artist.getSimilar( _artist.getArtist().getName(), GRAPH_LIMIT, API_KEY );
             for ( Artist similar : similars ) {
               ArtistWrapper wrapper = new ArtistWrapper( similar );
-              if ( graph.addVertex( wrapper ) ) { // Does not exists in the graph
+              if ( graph.hasVertex( wrapper ) ) { // Does not exists in the graph
                 _vertices.add( wrapper );
-                graph.addEdge( new Edge<ArtistWrapper>( _artist, wrapper ) );
+                _edges.add( new Edge<ArtistWrapper>( _artist, wrapper ) );
               }
             }
-            return _vertices;
+            manager.addVerticesAndEdges( _vertices, _edges );
+            return null;
           }
         };
-        new FutureTask<Set<ArtistWrapper>>( DO ).run();
+        _executor.submit( DO );
       } else { // REDO by putting vertices back in graph
-        for ( ArtistWrapper wrapper : _vertices ) {
-          if ( graph.addVertex( wrapper ) ) { // Does not exists in the graph
-            _vertices.add( wrapper );
-            graph.addEdge( new Edge<ArtistWrapper>( _artist, wrapper ) );
-          }
-        }
+        manager.addVerticesAndEdges( _vertices, _edges );
       }
       _artist.setStatus( Status.EXPANDED );
     }
@@ -83,10 +85,8 @@ public final class ActionFactory {
     /**
 		 * 
 		 */
-    public void rollback ( final Graph<ArtistWrapper> graph ) {
-      for ( ArtistWrapper wrapper : _vertices ) {
-        graph.removeVertex( wrapper );
-      }
+    public void rollback ( final Graph<ArtistWrapper> graph, final GraphManager manager ) {
+      manager.removeVerticesAndEdges( _vertices, _edges );
       _artist.setStatus( Status.SELECTED );
     }
 
@@ -111,6 +111,11 @@ public final class ActionFactory {
       boolean equals = this._artist.equals( action._artist );
       return equals;
     }
+
+    @Override
+    public int hashCode () {
+      return _artist.hashCode();
+    }
   }
 
   private static final class FirstAction implements Action<ArtistWrapper> {
@@ -124,25 +129,21 @@ public final class ActionFactory {
     }
 
     // TODO: ajouter un nombre limite initial
-    @Override
-    public void execute ( final Graph<ArtistWrapper> graph ) {
+    // @Override
+    public void execute ( final Graph<ArtistWrapper> graph, final GraphManager manager ) {
       final Callable<Void> DO = new Callable<Void>() {
 
         public Void call () throws Exception {
-          Collection<Artist> initialArtists = User.getTopArtists( _username, _period, API_KEY );
+          Collection<Artist> initialArtists = User.getTopArtists( _username, _period, API_KEY, GRAPH_LIMIT_INIT );
           Set<ArtistWrapper> vertices = new HashSet<ArtistWrapper>();
-          int count = 0;
           for ( Artist artist : initialArtists ) {
             ArtistWrapper wrapper = new ArtistWrapper( artist );
             graph.addVertex( wrapper );
             vertices.add( wrapper );
-            if ( ++count >= GRAPH_LIMIT_INIT ) {
-              break;
-            }
           }
           // Add edges between each wrapper possible
           for ( ArtistWrapper wrapper : vertices ) {
-            Collection<Artist> similars = Artist.getSimilar( wrapper.getArtist().getName(), API_KEY );
+            Collection<Artist> similars = Artist.getSimilar( wrapper.getArtist().getName(), GRAPH_LIMIT, API_KEY );
             for ( ArtistWrapper initial : vertices ) {
               if ( similars.contains( initial.getArtist() ) ) {
                 graph.addEdge( new Edge<ArtistWrapper>( wrapper, initial ) );
@@ -150,19 +151,39 @@ public final class ActionFactory {
             }
           }
           return null;
+          // TODO: terminated, may call manager to start draw
         }
       };
-      new FutureTask<Void>( DO ).run();
+      _executor.submit( DO );
     }
 
-    @Override
-    public void rollback ( final Graph<ArtistWrapper> graph ) {
+    // @Override
+    public void rollback ( final Graph<ArtistWrapper> graph, final GraphManager manager ) {
       // NOTHING
     }
 
-    @Override
+    // @Override
     public String getDefinition () {
       return "Graph creation: " + _username + ", (range = " + _period.toString() + " ).";
+    }
+
+    @Override
+    public boolean equals ( final Object obj ) {
+      if ( this == obj ) {
+        return true;
+      }
+      if ( !( obj instanceof ArtistAction ) ) {
+        return false;
+      }
+      FirstAction action = (FirstAction) obj;
+      boolean equals = this._username.equals( action._username );
+      equals &= this._period.equals( action._period );
+      return equals;
+    }
+
+    @Override
+    public int hashCode () {
+      return ( 7 * _username.hashCode() ) ^ _period.hashCode();
     }
   }
 }

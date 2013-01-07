@@ -1,5 +1,7 @@
 package ch.gapa.master.mlv.data;
 
+import ch.gapa.master.mlv.model.GraphManager;
+
 /**
  * The {@code Action} interface defines how to do/undo/redo based on Command pattern.The action can be initiated with
  * {@link ActionFactory}.
@@ -9,20 +11,20 @@ package ch.gapa.master.mlv.data;
  * {@link #execute()} method will then be called. To rollback,
  * 
  * <p>
- * The {@link #redo()} method must be called to get the {@code Action} list which then can be redo.
- * TODO: Attention, refonte pour execute sur le graphmanager pour qu'il puisse ajouter et remove les elements threadsafe
+ * The {@link #redo()} method must be called to get the {@code Action} list which then can be redo. TODO: Attention,
+ * refonte pour execute sur le graphmanager pour qu'il puisse ajouter et remove les elements threadsafe
  */
 public interface Action<T> {
 
   /**
    * Executes the {@code Action}, storing whatever is made to be rolled back.
    */
-  void execute ( final Graph<T> graph );
+  void execute ( final Graph<T> graph, final GraphManager manager );
 
   /**
    * Rollbacks the given {@code Action} to the previous state.
    */
-  void rollback ( final Graph<T> graph );
+  void rollback ( final Graph<T> graph, final GraphManager manager );
 
   /**
    * Used in conjunction with {@link #redo()} to get all actions descriptions.

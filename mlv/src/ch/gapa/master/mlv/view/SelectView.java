@@ -39,19 +39,19 @@ public class SelectView extends RelativeLayout implements
 		userText = (EditText) findViewById(R.id.editText1);
 	}
 
-	@Override
+	//@Override
 	public void onItemSelected(AdapterView<?> parent, View view, int pos,
 			long id) {
 		period = (Period) parent.getItemAtPosition(pos);
 	}
 
-	@Override
+	//@Override
 	public void onNothingSelected(AdapterView<?> arg0) {
 		// TODO Auto-generated method stub
 
 	}
 
-	@Override
+	//@Override
 	public void onClick(View v) {
 		if (!userText.getText().toString().equals(""))
 			user = userText.getText().toString();

@@ -74,6 +74,17 @@ public final class Graph<V> {
     return neighbors;
   }
 
+  public Collection<V> directNeighbors ( final V vertex ) {
+    Set<V> directNeighbors = new HashSet<V>();
+    for ( Edge<V> edge : _edges ) {
+      if ( edge.hasLinkBetweenVertex( vertex ) ) {
+        V neighbor = edge.getStart().equals( vertex ) ? edge.getEnd() : edge.getStart();
+        directNeighbors.add( neighbor );
+      }
+    }
+    return directNeighbors;
+  }
+
   /**
    * 
    * @param vertex

@@ -121,7 +121,7 @@ public class GraphWorker extends Thread {
 		canvas.scale(scaleFactor, scaleFactor, (cwidth) / 2, (cheight) / 2);
 		canvas.translate(-dx, -dy);
 
-		// TODO: Check, normalement peut être directement intégré dans
+		// TODO: Check, normalement peut etre directement integre dans
 		// l'event (? lock unlock attention)
 		hitDetection(canvas);
 
@@ -139,7 +139,7 @@ public class GraphWorker extends Thread {
 			return;
 
 		if (redoButton.contains(tapPosition.x, tapPosition.y)) {
-			_manager.redo();
+			//_manager.redo(); // TODO: get list, size == 1, redo automatic, otherwise ask (use action.getDescription)
 			return;
 		}
 		if (undoButton.contains(tapPosition.x, tapPosition.y)) {
