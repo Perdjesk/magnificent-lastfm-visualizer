@@ -104,16 +104,13 @@ public final class GraphManager {
 					break;
 				}
 			}
-			if (current != null) { // Current
-				// node
-				// pressed
+			if (current != null) { // Current node pressed
 				current.setStatus(Status.EXPAND);
-				if (current.getStatus() != Status.EXPANDED) { // lancer une
-					// action pour
-					// expand
+				if (current.getStatus() != Status.EXPANDED) { // lancer une action pourexpand
 					Action<ArtistWrapper> action = ActionFactory
 							.createExpandArtistAction(current);
-					_tree.insert(action);
+					Node<Action<ArtistWrapper>> node = _tree.insert(action);
+					_tree.setNode( node );
 					action.execute(_graph, this);
 				}
 			}
