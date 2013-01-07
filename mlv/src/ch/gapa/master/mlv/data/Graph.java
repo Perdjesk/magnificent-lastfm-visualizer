@@ -110,6 +110,8 @@ public final class Graph<V> {
   public void removeEdge ( final Edge<V> edge ) {
     _edges.remove( edge );
   }
+  
+
 
   /**
    * 
@@ -138,6 +140,13 @@ public final class Graph<V> {
     return _vertices.contains( vertex );
   }
 
+  public V getVertex( final V vertex){
+	  for (V v : _vertices){
+		  if (v.equals(vertex)) return v;
+	  }
+	  return null;
+  }
+  
   /**
    * 
    * @return

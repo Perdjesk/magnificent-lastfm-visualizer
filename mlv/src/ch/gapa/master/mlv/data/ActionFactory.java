@@ -70,6 +70,12 @@ public final class ActionFactory {
                 _vertices.add( wrapper );
                 _edges.add( new Edge<ArtistWrapper>( _artist, wrapper ) );
               }
+              else { // if similar does exist in graph ensure that an edge exist 
+					if ((!_edges.contains(new Edge<ArtistWrapper>(_artist, wrapper)))
+							|| (!_edges.contains(new Edge<ArtistWrapper>(wrapper, _artist)))) {
+						_edges.add( new Edge<ArtistWrapper>( _artist, graph.getVertex(wrapper) ) );
+            	  }
+              }
             }
             manager.addVerticesAndEdges( _vertices, _edges );
             return null;
