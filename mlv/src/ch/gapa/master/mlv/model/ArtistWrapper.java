@@ -101,10 +101,8 @@ public class ArtistWrapper {
 		}
 		switch (_status) {
 		case NOT_SELECTED:
-			_paint.setColor(DEFAULT_COLOR);
 			break;
 		case SELECTED:
-			_paint.setColor(SELECTED_COLOR);
 			break;
 		case EXPAND:
 			break;

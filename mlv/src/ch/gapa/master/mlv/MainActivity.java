@@ -10,7 +10,9 @@ import android.view.View;
 import android.view.inputmethod.InputMethodManager;
 import ch.gapa.master.mlv.view.GraphView;
 import ch.gapa.master.mlv.view.SelectView;
+import de.umass.lastfm.Caller;
 import de.umass.lastfm.Period;
+import de.umass.lastfm.cache.MemoryCache;
 
 public class MainActivity extends Activity {
 
@@ -20,7 +22,7 @@ public class MainActivity extends Activity {
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-
+		 Caller.getInstance ().setCache ( new MemoryCache () );
 		selectView = new SelectView(this);
 		setCurrentView(selectView);
 	}

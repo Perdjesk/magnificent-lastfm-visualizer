@@ -22,8 +22,8 @@ public final class SQLiteCache extends Cache {
   public static final String COLUMN_ID = "QUERY";
   public static final String COLUMN_RESPONSE = "RESPONSE";
   public static final String COLUMN_EXPIRATION = "EXPIRATION_DATE";
-  private static final String DATABASE_CREATE = "create table " + TABLE_CACHE + "(" + COLUMN_ID + " text primary key, "
-      + COLUMN_RESPONSE + " text not null + " + COLUMN_EXPIRATION + " integer not null);";
+  private static final String DATABASE_CREATE = "create table " + TABLE_CACHE + " (" + COLUMN_ID + " text primary key, "
+	      + COLUMN_RESPONSE + " text not null, " + COLUMN_EXPIRATION + " integer not null);";
   private static final String DATABASE_NAME = "mlvisu.db";
   private static final int DATABASE_VERSION = 1;
   private final SQLiteHelper _helper;

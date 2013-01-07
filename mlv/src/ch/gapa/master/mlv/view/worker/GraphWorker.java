@@ -8,7 +8,6 @@ import android.graphics.Point;
 import android.graphics.Rect;
 import android.util.Log;
 import android.view.SurfaceHolder;
-import ch.gapa.master.mlv.data.BusProvider;
 import ch.gapa.master.mlv.model.GraphManager;
 import ch.gapa.master.mlv.model.GraphManager.TapType;
 import ch.gapa.master.mlv.view.TapEvent;
@@ -169,11 +168,11 @@ public class GraphWorker extends Thread {
 		// Generate Event
 		switch (tapType) {
 		case SINGLE:
-			BusProvider.INSTANCE.getBus().post(new TapEvent(tapLocation));
+			//BusProvider.INSTANCE.getBus().post(new TapEvent(tapLocation));
+			_manager.fade(new TapEvent(tapLocation));
 			break;
 		case DOUBLE:
-			_manager.doubleTap(new TapEvent(tapLocation));
-
+			_manager.expand(new TapEvent(tapLocation));
 		}
 
 		// We set tapPosition to default when event is handled

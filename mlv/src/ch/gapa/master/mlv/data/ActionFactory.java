@@ -66,7 +66,7 @@ public final class ActionFactory {
             Collection<Artist> similars = Artist.getSimilar( _artist.getArtist().getName(), GRAPH_LIMIT, API_KEY );
             for ( Artist similar : similars ) {
               ArtistWrapper wrapper = new ArtistWrapper( similar );
-              if ( graph.hasVertex( wrapper ) ) { // Does not exists in the graph
+              if ( ! graph.hasVertex( wrapper ) ) { // Does not exists in the graph
                 _vertices.add( wrapper );
                 _edges.add( new Edge<ArtistWrapper>( _artist, wrapper ) );
               }
