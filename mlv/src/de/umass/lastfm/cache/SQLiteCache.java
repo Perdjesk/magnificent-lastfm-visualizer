@@ -42,7 +42,7 @@ public final class SQLiteCache extends Cache {
   @Override
   public boolean contains ( String cacheEntryName ) {
     String SELECT = COLUMN_ID + " = ?";
-    Cursor cursor = _database.query( DATABASE_NAME, allColumns, SELECT, new String [] { cacheEntryName }, null, null,
+    Cursor cursor = _database.query( TABLE_CACHE, allColumns, SELECT, new String [] { cacheEntryName }, null, null,
         null );
     boolean contained = cursor.moveToFirst();
     return contained;
@@ -51,7 +51,7 @@ public final class SQLiteCache extends Cache {
   @Override
   public InputStream load ( String cacheEntryName ) {
     String SELECT = COLUMN_ID + " = ?";
-    Cursor cursor = _database.query( DATABASE_NAME, allColumns, SELECT, new String [] { cacheEntryName }, null, null,
+    Cursor cursor = _database.query( TABLE_CACHE, allColumns, SELECT, new String [] { cacheEntryName }, null, null,
         null );
     try {
       if ( cursor.moveToFirst() ) {
@@ -66,7 +66,7 @@ public final class SQLiteCache extends Cache {
 
   @Override
   public void remove ( String cacheEntryName ) {
-    _database.delete( DATABASE_NAME, COLUMN_ID + " = ?", new String [] { cacheEntryName } );
+    _database.delete( TABLE_CACHE, COLUMN_ID + " = ?", new String [] { cacheEntryName } );
   }
 
   @Override
@@ -82,13 +82,13 @@ public final class SQLiteCache extends Cache {
     values.put( COLUMN_ID, cacheEntryName );
     values.put( COLUMN_RESPONSE, response );
     values.put( COLUMN_EXPIRATION, expirationDate );
-    _database.insert( DATABASE_NAME, null, values );
+    _database.insert( TABLE_CACHE, null, values );
   }
 
   @Override
   public boolean isExpired ( String cacheEntryName ) {
     String SELECT = COLUMN_ID + " = ?";
-    Cursor cursor = _database.query( DATABASE_NAME, new String [] { COLUMN_EXPIRATION }, SELECT,
+    Cursor cursor = _database.query( TABLE_CACHE, new String [] { COLUMN_EXPIRATION }, SELECT,
         new String [] { cacheEntryName }, null, null, null );
     if ( cursor.moveToFirst() ) {
       long expiration = cursor.getLong( 0 );
@@ -99,7 +99,7 @@ public final class SQLiteCache extends Cache {
 
   @Override
   public void clear () {
-    _database.delete( DATABASE_NAME, null, null );
+    _database.delete( TABLE_CACHE, null, null );
   }
 
   private static final class SQLiteHelper extends SQLiteOpenHelper {
