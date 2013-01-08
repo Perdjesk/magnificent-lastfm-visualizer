@@ -110,8 +110,6 @@ public final class Graph<V> {
   public void removeEdge ( final Edge<V> edge ) {
     _edges.remove( edge );
   }
-  
-
 
   /**
    * 
@@ -140,13 +138,49 @@ public final class Graph<V> {
     return _vertices.contains( vertex );
   }
 
-  public V getVertex( final V vertex){
-	  for (V v : _vertices){
-		  if (v.equals(vertex)) return v;
-	  }
-	  return null;
+  /**
+   * 
+   * @param vertex
+   * @return
+   */
+  public V getVertex ( final V vertex ) {
+    for ( V v : _vertices ) {
+      if ( v.equals( vertex ) ) return v;
+    }
+    return null;
   }
-  
+
+  /**
+   * 
+   * @param vertex
+   * @return
+   */
+  public Collection<Edge<V>> getEdges ( final V vertex ) {
+    Set<Edge<V>> edges = new HashSet<Edge<V>>();
+    for ( Edge<V> edge : _edges ) {
+      if ( edge.hasLinkBetweenVertex( vertex ) ) {
+        edges.add( edge );
+      }
+    }
+    return edges;
+  }
+
+  /**
+   * 
+   * @param vertex1
+   * @param vertex2
+   * @return
+   */
+  public boolean isLinked ( final V vertex1, final V vertex2 ) {
+    Collection<Edge<V>> edges = getEdges( vertex1 );
+    for ( Edge<V> edge : edges ) {
+      if ( edge.hasLinkBetweenVertex( vertex2 ) ) {
+        return true;
+      }
+    }
+    return false;
+  }
+
   /**
    * 
    * @return
@@ -193,8 +227,8 @@ public final class Graph<V> {
 
   @Override
   public String toString () {
-    StringBuilder sb = new StringBuilder( "[Graph] (vertices=" ).append( getVertexCount() ).append( ", edges=" )
-        .append( getEdgeCount() ).append( ")\n" );
+    StringBuilder sb = new StringBuilder( "[Graph] (vertices=" ).append( getVertexCount() ).append( ", edges=" ).append( getEdgeCount() )
+        .append( ")\n" );
     sb.append( "Vertices: { " );
     for ( V vertex : _vertices ) {
       sb.append( vertex.toString() ).append( " " );

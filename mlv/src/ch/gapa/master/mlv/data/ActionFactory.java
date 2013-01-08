@@ -7,7 +7,6 @@ import static ch.gapa.master.mlv.model.Constants.GRAPH_LIMIT_INIT;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
-import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
@@ -53,52 +52,51 @@ public final class ActionFactory {
       _edges = new HashSet<Edge<ArtistWrapper>>();
     }
 
-    /**
-		 * 
-		 */
+    @Override
     public void execute ( final Graph<ArtistWrapper> graph, final GraphManager manager ) {
       // Do the action
-      if ( !done ) {
-        final Callable<Void> DO = new Callable<Void>() {
+      _executor.submit( new Runnable() {
 
-          public Void call () throws Exception {
+        public void run () {
+          if ( !done ) {
             done = true;
             Collection<Artist> similars = Artist.getSimilar( _artist.getArtist().getName(), GRAPH_LIMIT, API_KEY );
             for ( Artist similar : similars ) {
               ArtistWrapper wrapper = new ArtistWrapper( similar );
-              if ( ! graph.hasVertex( wrapper ) ) { // Does not exists in the graph
+              if ( !graph.hasVertex( wrapper ) ) { // Does not exists in the graph
                 _vertices.add( wrapper );
                 _edges.add( new Edge<ArtistWrapper>( _artist, wrapper ) );
-              }
-              else { // if similar does exist in graph ensure that an edge exist 
-					if ((!_edges.contains(new Edge<ArtistWrapper>(_artist, wrapper)))
-							&& (!_edges.contains(new Edge<ArtistWrapper>(wrapper, _artist)))) {
-						_edges.add( new Edge<ArtistWrapper>( _artist, graph.getVertex(wrapper) ) );
-            	  }
+              } else { // if similar does exist in graph ensure that an edge exist
+                if ( !graph.isLinked( _artist, wrapper ) ) {
+                  _edges.add( new Edge<ArtistWrapper>( _artist, graph.getVertex( wrapper ) ) );
+                }
+                // if ( ( !_edges.contains( new Edge<ArtistWrapper>( _artist, wrapper ) ) )
+                // && ( !_edges.contains( new Edge<ArtistWrapper>( wrapper, _artist ) ) ) ) {
+                // }
               }
             }
-            manager.addVerticesAndEdges( _vertices, _edges );
-            return null;
           }
-        };
-        _executor.submit( DO );
-      } else { // REDO by putting vertices back in graph
-        manager.addVerticesAndEdges( _vertices, _edges );
-      }
-      _artist.setStatus( Status.EXPANDED );
+          // else { // REDO by putting vertices back in graph
+          // manager.addVerticesAndEdges( _vertices, _edges );
+          // }
+          manager.addVerticesAndEdges( _vertices, _edges ); // Do or redo, put back vertices and edges in graph
+          _artist.setStatus( Status.EXPANDED );
+        }
+      } );
     }
 
-    /**
-		 * 
-		 */
+    @Override
     public void rollback ( final Graph<ArtistWrapper> graph, final GraphManager manager ) {
-      manager.removeVerticesAndEdges( _vertices, _edges );
-      _artist.setStatus( Status.SELECTED );
+      _executor.submit( new Runnable() {
+
+        public void run () {
+          manager.removeVerticesAndEdges( _vertices, _edges );
+          _artist.setStatus( Status.SELECTED );
+        }
+      } );
     }
 
-    /**
-		 * 
-		 */
+    @Override
     public String getDefinition () {
       StringBuilder sb = new StringBuilder( "Expand: " );
       sb.append( _artist.getArtist().getName() );
@@ -134,17 +132,16 @@ public final class ActionFactory {
       _period = period;
     }
 
-    // TODO: ajouter un nombre limite initial
-    // @Override
+    @Override
     public void execute ( final Graph<ArtistWrapper> graph, final GraphManager manager ) {
-      final Callable<Void> DO = new Callable<Void>() {
+      _executor.submit( new Runnable() {
 
-        public Void call () throws Exception {
+        public void run () {
           Collection<Artist> initialArtists = User.getTopArtists( _username, _period, API_KEY, GRAPH_LIMIT_INIT );
           Set<ArtistWrapper> vertices = new HashSet<ArtistWrapper>();
+          Set<Edge<ArtistWrapper>> edges = new HashSet<Edge<ArtistWrapper>>();
           for ( Artist artist : initialArtists ) {
             ArtistWrapper wrapper = new ArtistWrapper( artist );
-            graph.addVertex( wrapper );
             vertices.add( wrapper );
           }
           // Add edges between each wrapper possible
@@ -152,23 +149,22 @@ public final class ActionFactory {
             Collection<Artist> similars = Artist.getSimilar( wrapper.getArtist().getName(), GRAPH_LIMIT, API_KEY );
             for ( ArtistWrapper initial : vertices ) {
               if ( similars.contains( initial.getArtist() ) ) {
-                graph.addEdge( new Edge<ArtistWrapper>( wrapper, initial ) );
+                edges.add( new Edge<ArtistWrapper>( wrapper, initial ) );
               }
             }
           }
-          return null;
+          manager.firstAction( vertices, edges );
           // TODO: terminated, may call manager to start draw
         }
-      };
-      _executor.submit( DO );
+      } );
     }
 
-    // @Override
+    @Override
     public void rollback ( final Graph<ArtistWrapper> graph, final GraphManager manager ) {
-      // NOTHING
+      // NOTHING, it's the first action; no rollback possible
     }
 
-    // @Override
+    @Override
     public String getDefinition () {
       return "Graph creation: " + _username + ", (range = " + _period.toString() + " ).";
     }
