@@ -59,6 +59,7 @@ public class ArtistWrapper {
 
   public void setAlpha ( int x ) {
     _paint.setAlpha( x );
+    _paintText.setAlpha(x);
   }
 
   public void setPosition ( final Point position ) {
