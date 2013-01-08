@@ -1,7 +1,5 @@
 package ch.gapa.master.mlv.gestureslistener;
 
-import java.security.acl.LastOwnerException;
-
 import android.view.ScaleGestureDetector;
 import ch.gapa.master.mlv.view.worker.GraphWorker;
 
