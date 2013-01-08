@@ -1,6 +1,5 @@
 package ch.gapa.master.mlv.gestureslistener;
 
-import android.util.Log;
 import android.view.GestureDetector;
 import android.view.MotionEvent;
 import ch.gapa.master.mlv.view.worker.GraphWorker;
