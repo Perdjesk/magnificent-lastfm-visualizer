@@ -83,8 +83,9 @@ public class GraphWorker extends Thread {
 		tapType = TapType.SINGLE;
 	}
 
-	public void onLongPress() {
-		_manager.resetAlphas();
+	public void onLongPress(float x, float y) {
+		tapPosition.set((int) x, (int) y);
+		tapType = TapType.LONG;
 	}
 	
 	public void onTwoFingerTap(){
@@ -233,6 +234,10 @@ public class GraphWorker extends Thread {
 				break;
 			case DOUBLE:
 				_manager.expand(new TapEvent(tapLocation));
+				break;
+			case LONG:
+				_manager.detailsOfArtist(new TapEvent(tapLocation));
+				break;
 			}
 		}
 		// We set tapPosition to default when event is handled

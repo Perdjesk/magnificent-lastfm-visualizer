@@ -14,7 +14,7 @@ public class SimpleGestureListener extends
 
 	@Override
 	public void onLongPress(MotionEvent e) {
-		worker.onLongPress();
+		worker.onLongPress(e.getX(), e.getY());
 	}
 
 	@Override
