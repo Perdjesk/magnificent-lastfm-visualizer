@@ -153,13 +153,19 @@ public class GraphWorker extends Thread {
 					final List<Action<ArtistWrapper>> redos = _manager
 							.getRedoList();
 					if (redos.size() > 1) {
-						AlertDialog.Builder builder = new AlertDialog.Builder(
-								MainActivity.mainActivity);
-						builder.setTitle("Choose redo action");
 						ArrayAdapter<Action<ArtistWrapper>> adapt = new ArrayAdapter<Action<ArtistWrapper>>(
 								MainActivity.mainActivity,
-								android.R.layout.simple_spinner_item, redos);
-						builder.setAdapter(adapt,
+								android.R.layout.select_dialog_item, redos);
+						AlertDialog.Builder builder = new AlertDialog.Builder(
+								MainActivity.mainActivity);
+						builder.setTitle("Choose redo action")
+						.setNegativeButton("Abort", new DialogInterface.OnClickListener() {
+				               @Override
+				               public void onClick(DialogInterface dialog, int id) {
+				                 dialog.dismiss();
+				               }
+				           })
+						.setAdapter(adapt,
 								new DialogInterface.OnClickListener() {
 									public void onClick(DialogInterface dialog,
 											int id) {
@@ -167,8 +173,8 @@ public class GraphWorker extends Thread {
 												.get(id);
 										_manager.redo(action);
 									}
-								});
-						builder.create().show();
+								})
+						.create().show();
 					}
 					else if (redos.size() == 1){
 						_manager.redo(redos.get(0));
