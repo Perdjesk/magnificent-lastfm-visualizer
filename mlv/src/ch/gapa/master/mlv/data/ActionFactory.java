@@ -87,13 +87,13 @@ public final class ActionFactory {
 
     @Override
     public void rollback ( final Graph<ArtistWrapper> graph, final GraphManager manager ) {
-      //_executor.submit( new Runnable() {
+      _executor.submit( new Runnable() {
 
-        //public void run () {
+        public void run () {
           manager.removeVerticesAndEdges( _vertices, _edges );
           _artist.setStatus( Status.SELECTED );
-        //}
-      //} );
+        }
+      } );
     }
 
     @Override
