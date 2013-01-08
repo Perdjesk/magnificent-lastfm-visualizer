@@ -55,7 +55,8 @@ public final class GraphManager {
     _edgePaint.setAntiAlias( true );
     _edgePaint.setColor( Color.WHITE );
     _edgePaint.setStrokeCap( Paint.Cap.ROUND );
-    _edgePaint.setStrokeWidth( 1 );
+    _edgePaint.setHinting(Paint.HINTING_ON);
+    _edgePaint.setStrokeWidth( 1.3f );
   }
 
   /**
@@ -192,8 +193,8 @@ public final class GraphManager {
 					url = "http://" + url;
 				}
 				webview.loadUrl(url);
+				webview.resumeTimers();
 				webview.getSettings().setSupportZoom(true);
-				webview.getSettings().setJavaScriptEnabled(true);
 				webview.getSettings().setBuiltInZoomControls(true);
 				webview.setWebViewClient(new WebViewClient() {
 					@Override
@@ -210,6 +211,7 @@ public final class GraphManager {
 									public void onClick(DialogInterface dialog,
 											int id) {
 										dialog.dismiss();
+										webview.pauseTimers();
 									}
 								})
 						.setOnKeyListener(new DialogInterface.OnKeyListener() {
@@ -225,7 +227,9 @@ public final class GraphManager {
 								return false;
 							}
 						})
-						.setView(webview).create().show();
+						.setView(webview);
+						AlertDialog dialog = builder.create();
+				dialog.show();
 			}
 		});
   }

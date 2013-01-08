@@ -29,9 +29,10 @@ public class ArtistWrapper {
 
   public ArtistWrapper ( final Artist artist ) {
     _artist = artist;
-    _paint.setAntiAlias( false );
+    _paint.setAntiAlias( true );
     _paint.setColor( DEFAULT_COLOR );
-    _paint.setTextAlign( Paint.Align.CENTER );
+    _paintText.setAntiAlias(true);
+    _paintText.setHinting(Paint.HINTING_ON);
     _paintText.setColor( Color.WHITE );
     _paintText.setTextAlign( Paint.Align.CENTER );
     defineColor();
