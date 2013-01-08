@@ -83,6 +83,6 @@ public final class GraphEngine {
       double dy = ( sumGravityFy + sumHookeFy ) * DAMPING;
       vertex.updateTemporaryPosition( (int) dx, (int) dy );
     }
-    _manager.commitGraph( _kinetic );
+    _manager.commitGraph( true );
   }
 }

@@ -87,17 +87,17 @@ public final class ActionFactory {
 
     @Override
     public void rollback ( final Graph<ArtistWrapper> graph, final GraphManager manager ) {
-      _executor.submit( new Runnable() {
+      //_executor.submit( new Runnable() {
 
-        public void run () {
+        //public void run () {
           manager.removeVerticesAndEdges( _vertices, _edges );
           _artist.setStatus( Status.SELECTED );
-        }
-      } );
+        //}
+      //} );
     }
 
     @Override
-    public String getDefinition () {
+    public String toString () {
       StringBuilder sb = new StringBuilder( "Expand: " );
       sb.append( _artist.getArtist().getName() );
       return sb.toString();
@@ -165,7 +165,7 @@ public final class ActionFactory {
     }
 
     @Override
-    public String getDefinition () {
+    public String toString () {
       return "Graph creation: " + _username + ", (range = " + _period.toString() + " ).";
     }
 

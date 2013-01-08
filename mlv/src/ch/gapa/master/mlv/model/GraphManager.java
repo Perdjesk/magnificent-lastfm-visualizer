@@ -221,7 +221,7 @@ public final class GraphManager {
       for ( Edge<ArtistWrapper> edge : edges ) {
         _graph.addEdge( edge );
       }
-      _engine.initNewVertices( _graph, vertices );
+      _engine.initGraphPositions( _graph );
     }
   }
 

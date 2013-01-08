@@ -1,5 +1,9 @@
 package ch.gapa.master.mlv.view.worker;
 
+import java.util.List;
+
+import android.app.AlertDialog;
+import android.content.DialogInterface;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Matrix;
@@ -8,6 +12,10 @@ import android.graphics.Point;
 import android.graphics.Rect;
 import android.util.Log;
 import android.view.SurfaceHolder;
+import android.widget.ArrayAdapter;
+import ch.gapa.master.mlv.MainActivity;
+import ch.gapa.master.mlv.data.Action;
+import ch.gapa.master.mlv.model.ArtistWrapper;
 import ch.gapa.master.mlv.model.GraphManager;
 import ch.gapa.master.mlv.model.GraphManager.TapType;
 import ch.gapa.master.mlv.view.TapEvent;
@@ -73,8 +81,8 @@ public class GraphWorker extends Thread {
 		tapPosition.set((int) x, (int) y);
 		tapType = TapType.SINGLE;
 	}
-	
-	public void onLongPress(){
+
+	public void onLongPress() {
 		_manager.resetAlphas();
 	}
 
@@ -138,43 +146,73 @@ public class GraphWorker extends Thread {
 			return;
 
 		if (redoButton.contains(tapPosition.x, tapPosition.y)) {
-			//_manager.redo(); // TODO: get list, size == 1, redo automatic, otherwise ask (use action.getDescription)
-			return;
-		}
-		if (undoButton.contains(tapPosition.x, tapPosition.y)) {
+			// _manager.redo(); // TODO: get list, size == 1, redo automatic,
+			// otherwise ask (use action.getDescription)
+			MainActivity.mainActivity.runOnUiThread(new Runnable() {
+				public void run() {
+					final List<Action<ArtistWrapper>> redos = _manager
+							.getRedoList();
+					if (redos.size() > 1) {
+						AlertDialog.Builder builder = new AlertDialog.Builder(
+								MainActivity.mainActivity);
+						builder.setTitle("Choose redo action");
+						ArrayAdapter<Action<ArtistWrapper>> adapt = new ArrayAdapter<Action<ArtistWrapper>>(
+								MainActivity.mainActivity,
+								android.R.layout.simple_spinner_item, redos);
+						builder.setAdapter(adapt,
+								new DialogInterface.OnClickListener() {
+									public void onClick(DialogInterface dialog,
+											int id) {
+										Action<ArtistWrapper> action = redos
+												.get(id);
+										_manager.redo(action);
+									}
+								});
+						builder.create().show();
+					}
+					else if (redos.size() == 1){
+						_manager.redo(redos.get(0));
+					}
+				}
+			});
+		} else if (undoButton.contains(tapPosition.x, tapPosition.y)) {
 			_manager.undo();
-			return;
 		}
 
-		// We get the inverse of the matrix transformation. By default the
-		// matrix transformation map canvas coordinates to screen coordinates,
-		// and we need to
-		// do the inverse operation.
-		Matrix matrixInverse = new Matrix();
-		boolean invertible = canvas.getMatrix().invert(matrixInverse);
+		else {
 
-		// If the matrix is not invertible you are in trouble and hitDetection
-		// can not continue.
-		if (!invertible) {
-			Log.e("MLV-hitDetection",
-					"A matrix from canvas.getMatrix() is not invertible");
-			return;
+			// We get the inverse of the matrix transformation. By default the
+			// matrix transformation map canvas coordinates to screen
+			// coordinates,
+			// and we need to
+			// do the inverse operation.
+			Matrix matrixInverse = new Matrix();
+			boolean invertible = canvas.getMatrix().invert(matrixInverse);
+
+			// If the matrix is not invertible you are in trouble and
+			// hitDetection
+			// can not continue.
+			if (!invertible) {
+				Log.e("MLV-hitDetection",
+						"A matrix from canvas.getMatrix() is not invertible");
+				return;
+			}
+
+			float[] pointTap = { tapPosition.x, tapPosition.y };
+			matrixInverse.mapPoints(pointTap);
+			Point tapLocation = new Point((int) pointTap[0], (int) pointTap[1]);
+
+			// Generate Event
+			switch (tapType) {
+			case SINGLE:
+				// BusProvider.INSTANCE.getBus().post(new
+				// TapEvent(tapLocation));
+				_manager.fade(new TapEvent(tapLocation));
+				break;
+			case DOUBLE:
+				_manager.expand(new TapEvent(tapLocation));
+			}
 		}
-
-		float[] pointTap = { tapPosition.x, tapPosition.y };
-		matrixInverse.mapPoints(pointTap);
-		Point tapLocation = new Point((int) pointTap[0], (int) pointTap[1]);
-
-		// Generate Event
-		switch (tapType) {
-		case SINGLE:
-			//BusProvider.INSTANCE.getBus().post(new TapEvent(tapLocation));
-			_manager.fade(new TapEvent(tapLocation));
-			break;
-		case DOUBLE:
-			_manager.expand(new TapEvent(tapLocation));
-		}
-
 		// We set tapPosition to default when event is handled
 		tapPosition.set(0, 0);
 	}

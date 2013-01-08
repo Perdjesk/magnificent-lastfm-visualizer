@@ -18,13 +18,16 @@ public class MainActivity extends Activity {
 
 	View selectView;
 	View currentView;
-
+	public static Activity mainActivity;
+	
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
+		mainActivity=this;
 		 Caller.getInstance ().setCache ( new MemoryCache () );
 		selectView = new SelectView(this);
 		setCurrentView(selectView);
+		
 	}
 
 	public void setCurrentView(View v) {

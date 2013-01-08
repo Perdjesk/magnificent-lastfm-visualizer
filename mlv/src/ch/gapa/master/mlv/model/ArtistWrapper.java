@@ -23,13 +23,12 @@ public class ArtistWrapper {
   private final Point _temporaryPosition = new Point();
   private final Paint _paint = new Paint();
   private Status _status;
-  private boolean _placement;
+  private boolean _placement = true;
   private Paint _paintText = new Paint();
   Random rand = new Random();
 
   public ArtistWrapper ( final Artist artist ) {
     _artist = artist;
-    _placement = false;
     _paint.setAntiAlias( false );
     _paint.setColor( DEFAULT_COLOR );
     _paint.setTextAlign( Paint.Align.CENTER );
@@ -103,9 +102,7 @@ public class ArtistWrapper {
   }
 
   public void setStatus ( final Status status ) {
-    if ( _status != Status.EXPANDED ) {
       this._status = status;
-    }
     switch ( _status ) {
     case NOT_SELECTED:
       break;
