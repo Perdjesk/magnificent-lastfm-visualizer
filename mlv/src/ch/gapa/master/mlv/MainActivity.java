@@ -24,7 +24,7 @@ public class MainActivity extends Activity {
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		mainActivity=this;
-		 Caller.getInstance ().setCache ( new SQLiteCache (this) );
+		Caller.getInstance ().setCache ( new SQLiteCache (this) );
 		selectView = new SelectView(this);
 		setCurrentView(selectView);
 		
