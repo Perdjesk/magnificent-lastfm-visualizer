@@ -85,7 +85,11 @@ public class GraphWorker extends Thread {
 	public void onLongPress() {
 		_manager.resetAlphas();
 	}
-
+	
+	public void onTwoFingerTap(){
+		_manager.resetAlphas();
+	}
+	
 	public void onDoubleTap(float x, float y) {
 		tapPosition.set((int) x, (int) y);
 		tapType = TapType.DOUBLE;
@@ -120,10 +124,7 @@ public class GraphWorker extends Thread {
 		canvas.drawText("FPS: " + fps, 10, 10, paintTextFps);
 		undoButton = new Rect(0, cheight - 50, 50, cheight);
 		redoButton = new Rect(cwidth - 50, cheight - 50, cwidth, cheight);
-		canvas.drawRect(undoButton, paintDoButton);
-		canvas.drawText("UNDO", 10, cheight - 25, paintTextFps);
-		canvas.drawRect(redoButton, paintDoButton);
-		canvas.drawText("REDO", cwidth - 40, cheight - 25, paintTextFps);
+		
 
 		canvas.scale(scaleFactor, scaleFactor, (cwidth) / 2, (cheight) / 2);
 		canvas.translate(-dx, -dy);
@@ -135,6 +136,11 @@ public class GraphWorker extends Thread {
 		_manager.draw(canvas);
 
 		canvas.restore();
+		
+		canvas.drawRect(undoButton, paintDoButton);
+		canvas.drawText("UNDO", 10, cheight - 25, paintTextFps);
+		canvas.drawRect(redoButton, paintDoButton);
+		canvas.drawText("REDO", cwidth - 40, cheight - 25, paintTextFps);
 
 		surfaceHodler.unlockCanvasAndPost(canvas);
 	}
