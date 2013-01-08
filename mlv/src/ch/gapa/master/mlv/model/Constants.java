@@ -17,6 +17,7 @@ public final class Constants {
   public static final String DEFAULT_USER = "nordesk";
   public static final Period DEFAULT_PERIOD = Period.OVERALL;
   public static final int NODE_RADIUS = 20;
+  public static final int INITIAL_DISTANCE_FACTOR = 5;
   public static final double SPRING_MINIMAL_LENGTH = 80.;
   public static final int SHIFT_X = 100;
   public static final int SHIFT_Y = 100;

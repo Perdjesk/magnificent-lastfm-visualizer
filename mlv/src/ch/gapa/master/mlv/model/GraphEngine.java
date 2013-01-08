@@ -7,6 +7,10 @@ import static ch.gapa.master.mlv.model.Constants.NODE_RADIUS;
 import static ch.gapa.master.mlv.model.Constants.SHIFT_X;
 import static ch.gapa.master.mlv.model.Constants.SHIFT_Y;
 import static ch.gapa.master.mlv.model.Constants.SPRING_MINIMAL_LENGTH;
+import static ch.gapa.master.mlv.model.Constants.INITIAL_DISTANCE_FACTOR;
+
+import java.util.Set;
+
 import android.graphics.Point;
 import ch.gapa.master.mlv.data.Graph;
 
@@ -15,6 +19,7 @@ public final class GraphEngine {
 
   private final GraphManager _manager;
   private double _kinetic = .0;
+  private double _oldKinetic = .0;
 
   public GraphEngine ( final GraphManager manager ) {
     _manager = manager;
@@ -22,7 +27,7 @@ public final class GraphEngine {
 
   public void initGraphPositions ( final Graph<ArtistWrapper> graph ) {
     int vCount = graph.getVertexCount();
-    double R = ( 3.0 * vCount * NODE_RADIUS ) / ( 2.0 * Math.PI ); // Radius
+    double R = ( INITIAL_DISTANCE_FACTOR * vCount * NODE_RADIUS ) / ( 2.0 * Math.PI ); // Radius => 3 * 5 * 20 / 6.34 = 47 pixel radius
     double alpha = 0;
     int num = 0;
     for ( ArtistWrapper artist : graph.getVertices() ) {
@@ -32,8 +37,18 @@ public final class GraphEngine {
       double x = sgnX * R * Math.cos( alpha ) + R + NODE_RADIUS + SHIFT_X;
       double y = sgnY * R * Math.sin( alpha ) + R + NODE_RADIUS + SHIFT_Y;
       artist.setPosition( new Point( (int) x, (int) y ) ); // set x,y pos to artist
+      artist.setPlacement( true );
       num++;
     }
+  }
+
+  public void initNewVertices ( final Graph<ArtistWrapper> graph, final Set<ArtistWrapper> vertices ) {
+    // TODO: get all vertices connected to vertex
+    // compute centroid
+    // from centroid, try to place it in a circle fashion by checking for overlapping
+    // if no overlapping, put it
+    // if a full circle done, increase radius (double)
+    
   }
 
   public void computeStep ( final Graph<ArtistWrapper> graph ) {
@@ -83,6 +98,6 @@ public final class GraphEngine {
       double dy = ( sumGravityFy + sumHookeFy ) * DAMPING;
       vertex.updateTemporaryPosition( (int) dx, (int) dy );
     }
-    _manager.commitGraph( _kinetic );
+    _manager.commitGraph( false );
   }
 }

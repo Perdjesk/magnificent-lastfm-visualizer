@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.Set;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 import android.graphics.Canvas;
 import android.graphics.Color;
@@ -29,6 +30,7 @@ public final class GraphManager {
   private final Object LOCK = new Object();
   private final Paint _edgePaint = new Paint();
   private final ExecutorService _executor = Executors.newFixedThreadPool( 2 );
+  private final AtomicBoolean _running;
   private ArtistWrapper current;
 
   public enum TapType {
@@ -41,6 +43,7 @@ public final class GraphManager {
    * @param period
    */
   public GraphManager ( final String username, final Period period ) {
+    _running = new AtomicBoolean( false );
     _engine = new GraphEngine( this );
     _graph = new Graph<ArtistWrapper>();
     Action<ArtistWrapper> action = ActionFactory.createFirstAction( username, period );
@@ -199,13 +202,21 @@ public final class GraphManager {
    * @param next
    */
   public void commitGraph ( boolean next ) {
+    _running.set( false );
     synchronized ( LOCK ) {
       for ( ArtistWrapper artist : _graph.getVertices() ) {
         artist.commitPosition();
       }
     }
-    // TODO: Check if kinetic calls for a new round of computation
-    // Not here,
+    if ( next && !_running.getAndSet( true ) ) {
+      _executor.execute( new Runnable() {
+
+        @Override
+        public void run () {
+          _engine.computeStep( _graph );
+        }
+      });
+    }
   }
 
   /**
@@ -222,6 +233,7 @@ public final class GraphManager {
         _graph.addEdge( edge );
       }
       _engine.initNewVertices( _graph, vertices );
+      commitGraph( true ); // automatically launch one step at least !
     }
   }
 
