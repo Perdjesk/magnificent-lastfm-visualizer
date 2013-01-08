@@ -12,7 +12,7 @@ import ch.gapa.master.mlv.view.GraphView;
 import ch.gapa.master.mlv.view.SelectView;
 import de.umass.lastfm.Caller;
 import de.umass.lastfm.Period;
-import de.umass.lastfm.cache.MemoryCache;
+import de.umass.lastfm.cache.SQLiteCache;
 
 public class MainActivity extends Activity {
 
@@ -24,7 +24,7 @@ public class MainActivity extends Activity {
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		mainActivity=this;
-		 Caller.getInstance ().setCache ( new MemoryCache () );
+		 Caller.getInstance ().setCache ( new SQLiteCache (this) );
 		selectView = new SelectView(this);
 		setCurrentView(selectView);
 		
