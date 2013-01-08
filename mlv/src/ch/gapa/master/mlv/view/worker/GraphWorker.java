@@ -13,6 +13,7 @@ import android.graphics.Rect;
 import android.util.Log;
 import android.view.SurfaceHolder;
 import android.widget.ArrayAdapter;
+import android.widget.Toast;
 import ch.gapa.master.mlv.MainActivity;
 import ch.gapa.master.mlv.data.Action;
 import ch.gapa.master.mlv.model.ArtistWrapper;
@@ -152,8 +153,6 @@ public class GraphWorker extends Thread {
 			return;
 
 		if (redoButton.contains(tapPosition.x, tapPosition.y)) {
-			// _manager.redo(); // TODO: get list, size == 1, redo automatic,
-			// otherwise ask (use action.getDescription)
 			MainActivity.mainActivity.runOnUiThread(new Runnable() {
 				public void run() {
 					final List<Action<ArtistWrapper>> redos = _manager
@@ -185,10 +184,21 @@ public class GraphWorker extends Thread {
 					else if (redos.size() == 1){
 						_manager.redo(redos.get(0));
 					}
+					else {
+						Toast toast = Toast.makeText(MainActivity.mainActivity, "Nothing to redo", Toast.LENGTH_SHORT);
+						toast.show();
+					}
 				}
 			});
 		} else if (undoButton.contains(tapPosition.x, tapPosition.y)) {
-			_manager.undo();
+			if( ! _manager.undo()){
+				MainActivity.mainActivity.runOnUiThread(new Runnable() {
+					public void run() {
+				Toast toast = Toast.makeText(MainActivity.mainActivity, "Nothing to undo", Toast.LENGTH_SHORT);
+				toast.show();
+					}
+				});
+			}
 		}
 
 		else {

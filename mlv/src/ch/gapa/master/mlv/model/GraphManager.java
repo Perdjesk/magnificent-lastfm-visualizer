@@ -160,9 +160,12 @@ public final class GraphManager {
   /**
    * 
    */
-  public void undo () {
+  public boolean undo () {
+	  if (_tree.getNode().getParent()==_tree.getNode())
+		  return false;
     _tree.getNode().getData().rollback( _graph, this );
     _tree.setNode( _tree.getNode().getParent() );
+    return true;
   }
 
   /**
