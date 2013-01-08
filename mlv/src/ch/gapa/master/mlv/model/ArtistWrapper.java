@@ -46,7 +46,7 @@ public class ArtistWrapper {
     Iterator<Tag> it = tags.iterator();
     Integer color = null;
     while ( it.hasNext() ) {
-      color = Constants.tagColor.get( it.next().getName() );
+      color = Constants.tagColor.get( it.next().getName().toLowerCase() );
       if ( color != null ) {
         _paint.setColor( color );
         break;
