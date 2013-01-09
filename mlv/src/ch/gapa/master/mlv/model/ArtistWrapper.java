@@ -23,16 +23,16 @@ public class ArtistWrapper {
   private final Point _temporaryPosition = new Point();
   private final Paint _paint = new Paint();
   private Status _status;
-  private boolean _placement;
+  private boolean _placement = true;
   private Paint _paintText = new Paint();
   Random rand = new Random();
 
   public ArtistWrapper ( final Artist artist ) {
     _artist = artist;
-    _placement = false;
-    _paint.setAntiAlias( false );
+    _paint.setAntiAlias( true );
     _paint.setColor( DEFAULT_COLOR );
-    _paint.setTextAlign( Paint.Align.CENTER );
+    _paintText.setAntiAlias(true);
+    _paintText.setHinting(Paint.HINTING_ON);
     _paintText.setColor( Color.WHITE );
     _paintText.setTextAlign( Paint.Align.CENTER );
     defineColor();
@@ -46,7 +46,7 @@ public class ArtistWrapper {
     Iterator<Tag> it = tags.iterator();
     Integer color = null;
     while ( it.hasNext() ) {
-      color = Constants.tagColor.get( it.next().getName() );
+      color = Constants.tagColor.get( it.next().getName().toLowerCase() );
       if ( color != null ) {
         _paint.setColor( color );
         break;
@@ -60,6 +60,7 @@ public class ArtistWrapper {
 
   public void setAlpha ( int x ) {
     _paint.setAlpha( x );
+    _paintText.setAlpha(x);
   }
 
   public void setPosition ( final Point position ) {
@@ -103,9 +104,7 @@ public class ArtistWrapper {
   }
 
   public void setStatus ( final Status status ) {
-    if ( _status != Status.EXPANDED ) {
       this._status = status;
-    }
     switch ( _status ) {
     case NOT_SELECTED:
       break;

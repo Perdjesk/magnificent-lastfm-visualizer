@@ -97,7 +97,7 @@ public final class ActionFactory {
     }
 
     @Override
-    public String getDefinition () {
+    public String toString () {
       StringBuilder sb = new StringBuilder( "Expand: " );
       sb.append( _artist.getArtist().getName() );
       return sb.toString();
@@ -165,7 +165,7 @@ public final class ActionFactory {
     }
 
     @Override
-    public String getDefinition () {
+    public String toString () {
       return "Graph creation: " + _username + ", (range = " + _period.toString() + " ).";
     }
 

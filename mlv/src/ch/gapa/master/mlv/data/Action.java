@@ -31,5 +31,5 @@ public interface Action<T> {
    * 
    * @return the action definition (e.g. expand 'Bon Iver' similarities)
    */
-  String getDefinition ();
+  String toString ();
 }

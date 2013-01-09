@@ -8,10 +8,16 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.atomic.AtomicBoolean;
 
+import android.app.AlertDialog;
+import android.content.DialogInterface;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.Point;
+import android.view.KeyEvent;
+import android.webkit.WebView;
+import android.webkit.WebViewClient;
+import ch.gapa.master.mlv.MainActivity;
 import ch.gapa.master.mlv.data.Action;
 import ch.gapa.master.mlv.data.ActionFactory;
 import ch.gapa.master.mlv.data.Edge;
@@ -34,7 +40,7 @@ public final class GraphManager {
   private ArtistWrapper current;
 
   public enum TapType {
-    SINGLE, DOUBLE;
+    SINGLE, DOUBLE, LONG;
   }
 
   /**
@@ -52,7 +58,8 @@ public final class GraphManager {
     _edgePaint.setAntiAlias( true );
     _edgePaint.setColor( Color.WHITE );
     _edgePaint.setStrokeCap( Paint.Cap.ROUND );
-    _edgePaint.setStrokeWidth( 1 );
+    _edgePaint.setHinting( Paint.HINTING_ON );
+    _edgePaint.setStrokeWidth( 1.3f );
   }
 
   /**
@@ -160,12 +167,78 @@ public final class GraphManager {
     } );
   }
 
+  public void detailsOfArtist ( final TapEvent event ) {
+    _executor.execute( new Runnable() {
+
+      public void run () {
+        synchronized ( LOCK ) {
+          ArtistWrapper selected = null;
+          for ( ArtistWrapper node : _graph.getVertices() ) {
+            if ( node.contains( event.getLocation() ) ) {
+              selected = node;
+              break;
+            }
+          }
+          if ( selected != null ) dialogArtistDetails( selected );
+        }
+      }
+    } );
+  }
+
+  private void dialogArtistDetails ( final ArtistWrapper artist ) {
+    MainActivity.mainActivity.runOnUiThread( new Runnable() {
+
+      public void run () {
+        AlertDialog.Builder builder = new AlertDialog.Builder( MainActivity.mainActivity );
+        final WebView webview = new WebView( MainActivity.mainActivity );
+        String url = artist.getArtist().getUrl();
+        if ( !url.startsWith( "http://" ) ) {
+          url = "http://" + url;
+        }
+        webview.loadUrl( url );
+        webview.resumeTimers();
+        webview.getSettings().setSupportZoom( true );
+        webview.getSettings().setBuiltInZoomControls( true );
+        webview.setWebViewClient( new WebViewClient() {
+
+          @Override
+          public boolean shouldOverrideUrlLoading ( WebView view, String url ) {
+            view.loadUrl( url );
+            return true;
+          }
+        } );
+        builder.setTitle( "Artist details" ).setNegativeButton( "Return to graph", new DialogInterface.OnClickListener() {
+
+          @Override
+          public void onClick ( DialogInterface dialog, int id ) {
+            dialog.dismiss();
+            webview.pauseTimers();
+          }
+        } ).setOnKeyListener( new DialogInterface.OnKeyListener() {
+
+          @Override
+          public boolean onKey ( DialogInterface dialog, int keyCode, KeyEvent event ) {
+            if ( keyCode == KeyEvent.KEYCODE_BACK && event.getAction() == KeyEvent.ACTION_UP && !event.isCanceled() ) {
+              webview.goBack();
+              return true;
+            }
+            return false;
+          }
+        } ).setView( webview );
+        AlertDialog dialog = builder.create();
+        dialog.show();
+      }
+    } );
+  }
+
   /**
    * 
    */
-  public void undo () {
+  public boolean undo () {
+    if ( _tree.getNode().getParent() == _tree.getNode() ) return false;
     _tree.getNode().getData().rollback( _graph, this );
     _tree.setNode( _tree.getNode().getParent() );
+    return true;
   }
 
   /**
@@ -215,7 +288,7 @@ public final class GraphManager {
         public void run () {
           _engine.computeStep( _graph );
         }
-      });
+      } );
     }
   }
 

@@ -1,5 +1,9 @@
 package ch.gapa.master.mlv.view.worker;
 
+import java.util.List;
+
+import android.app.AlertDialog;
+import android.content.DialogInterface;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Matrix;
@@ -8,6 +12,11 @@ import android.graphics.Point;
 import android.graphics.Rect;
 import android.util.Log;
 import android.view.SurfaceHolder;
+import android.widget.ArrayAdapter;
+import android.widget.Toast;
+import ch.gapa.master.mlv.MainActivity;
+import ch.gapa.master.mlv.data.Action;
+import ch.gapa.master.mlv.model.ArtistWrapper;
 import ch.gapa.master.mlv.model.GraphManager;
 import ch.gapa.master.mlv.model.GraphManager.TapType;
 import ch.gapa.master.mlv.view.TapEvent;
@@ -73,11 +82,16 @@ public class GraphWorker extends Thread {
 		tapPosition.set((int) x, (int) y);
 		tapType = TapType.SINGLE;
 	}
+
+	public void onLongPress(float x, float y) {
+		tapPosition.set((int) x, (int) y);
+		tapType = TapType.LONG;
+	}
 	
-	public void onLongPress(){
+	public void onTwoFingerTap(){
 		_manager.resetAlphas();
 	}
-
+	
 	public void onDoubleTap(float x, float y) {
 		tapPosition.set((int) x, (int) y);
 		tapType = TapType.DOUBLE;
@@ -112,10 +126,7 @@ public class GraphWorker extends Thread {
 		canvas.drawText("FPS: " + fps, 10, 10, paintTextFps);
 		undoButton = new Rect(0, cheight - 50, 50, cheight);
 		redoButton = new Rect(cwidth - 50, cheight - 50, cwidth, cheight);
-		canvas.drawRect(undoButton, paintDoButton);
-		canvas.drawText("UNDO", 10, cheight - 25, paintTextFps);
-		canvas.drawRect(redoButton, paintDoButton);
-		canvas.drawText("REDO", cwidth - 40, cheight - 25, paintTextFps);
+		
 
 		canvas.scale(scaleFactor, scaleFactor, (cwidth) / 2, (cheight) / 2);
 		canvas.translate(-dx, -dy);
@@ -127,6 +138,11 @@ public class GraphWorker extends Thread {
 		_manager.draw(canvas);
 
 		canvas.restore();
+		
+		canvas.drawRect(undoButton, paintDoButton);
+		canvas.drawText("UNDO", 10, cheight - 25, paintTextFps);
+		canvas.drawRect(redoButton, paintDoButton);
+		canvas.drawText("REDO", cwidth - 40, cheight - 25, paintTextFps);
 
 		surfaceHodler.unlockCanvasAndPost(canvas);
 	}
@@ -138,43 +154,92 @@ public class GraphWorker extends Thread {
 			return;
 
 		if (redoButton.contains(tapPosition.x, tapPosition.y)) {
-			//_manager.redo(); // TODO: get list, size == 1, redo automatic, otherwise ask (use action.getDescription)
-			return;
+			MainActivity.mainActivity.runOnUiThread(new Runnable() {
+				public void run() {
+					final List<Action<ArtistWrapper>> redos = _manager
+							.getRedoList();
+					if (redos.size() > 1) {
+						ArrayAdapter<Action<ArtistWrapper>> adapt = new ArrayAdapter<Action<ArtistWrapper>>(
+								MainActivity.mainActivity,
+								android.R.layout.select_dialog_item, redos);
+						AlertDialog.Builder builder = new AlertDialog.Builder(
+								MainActivity.mainActivity);
+						builder.setTitle("Choose redo action")
+						.setNegativeButton("Abort", new DialogInterface.OnClickListener() {
+				               @Override
+				               public void onClick(DialogInterface dialog, int id) {
+				                 dialog.dismiss();
+				               }
+				           })
+						.setAdapter(adapt,
+								new DialogInterface.OnClickListener() {
+									public void onClick(DialogInterface dialog,
+											int id) {
+										Action<ArtistWrapper> action = redos
+												.get(id);
+										_manager.redo(action);
+									}
+								})
+						.create().show();
+					}
+					else if (redos.size() == 1){
+						_manager.redo(redos.get(0));
+					}
+					else {
+						Toast toast = Toast.makeText(MainActivity.mainActivity, "Nothing to redo", Toast.LENGTH_SHORT);
+						toast.show();
+					}
+				}
+			});
+		} else if (undoButton.contains(tapPosition.x, tapPosition.y)) {
+			if( ! _manager.undo()){
+				MainActivity.mainActivity.runOnUiThread(new Runnable() {
+					public void run() {
+				Toast toast = Toast.makeText(MainActivity.mainActivity, "Nothing to undo", Toast.LENGTH_SHORT);
+				toast.show();
+					}
+				});
+			}
 		}
-		if (undoButton.contains(tapPosition.x, tapPosition.y)) {
-			_manager.undo();
-			return;
+
+		else {
+
+			// We get the inverse of the matrix transformation. By default the
+			// matrix transformation map canvas coordinates to screen
+			// coordinates,
+			// and we need to
+			// do the inverse operation.
+			Matrix matrixInverse = new Matrix();
+			boolean invertible = canvas.getMatrix().invert(matrixInverse);
+
+			// If the matrix is not invertible you are in trouble and
+			// hitDetection
+			// can not continue.
+			if (!invertible) {
+				Log.e("MLV-hitDetection",
+						"A matrix from canvas.getMatrix() is not invertible");
+				return;
+			}
+
+			float[] pointTap = { tapPosition.x, tapPosition.y };
+			matrixInverse.mapPoints(pointTap);
+			Point tapLocation = new Point((int) pointTap[0], (int) pointTap[1]);
+
+			// Generate Event
+			switch (tapType) {
+			case SINGLE:
+				// BusProvider.INSTANCE.getBus().post(new
+				// TapEvent(tapLocation));
+				_manager.fade(new TapEvent(tapLocation));
+				break;
+			case DOUBLE:
+				_manager.expand(new TapEvent(tapLocation));
+				break;
+			case LONG:
+				_manager.detailsOfArtist(new TapEvent(tapLocation));
+				break;
+			}
 		}
-
-		// We get the inverse of the matrix transformation. By default the
-		// matrix transformation map canvas coordinates to screen coordinates,
-		// and we need to
-		// do the inverse operation.
-		Matrix matrixInverse = new Matrix();
-		boolean invertible = canvas.getMatrix().invert(matrixInverse);
-
-		// If the matrix is not invertible you are in trouble and hitDetection
-		// can not continue.
-		if (!invertible) {
-			Log.e("MLV-hitDetection",
-					"A matrix from canvas.getMatrix() is not invertible");
-			return;
-		}
-
-		float[] pointTap = { tapPosition.x, tapPosition.y };
-		matrixInverse.mapPoints(pointTap);
-		Point tapLocation = new Point((int) pointTap[0], (int) pointTap[1]);
-
-		// Generate Event
-		switch (tapType) {
-		case SINGLE:
-			//BusProvider.INSTANCE.getBus().post(new TapEvent(tapLocation));
-			_manager.fade(new TapEvent(tapLocation));
-			break;
-		case DOUBLE:
-			_manager.expand(new TapEvent(tapLocation));
-		}
-
 		// We set tapPosition to default when event is handled
 		tapPosition.set(0, 0);
 	}

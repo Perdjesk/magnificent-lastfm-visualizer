@@ -3,6 +3,7 @@ package ch.gapa.master.mlv.data;
 import java.util.ArrayDeque;
 import java.util.Collection;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.Queue;
 import java.util.Set;
 
@@ -218,11 +219,14 @@ public final class Graph<V> {
    * @param vertex
    */
   private void removeEdges ( final V vertex ) {
-    for ( Edge<V> edge : _edges ) {
-      if ( vertex.equals( edge.getStart() ) || vertex.equals( edge.getEnd() ) ) {
-        removeEdge( edge );
-      }
-    }
+	  Iterator<Edge<V>> iter = _edges.iterator();
+	  Edge<V> edge = null;
+	  while (iter.hasNext()){
+		  edge = iter.next();
+		  if ( vertex.equals( edge.getStart() ) || vertex.equals( edge.getEnd() ) ) {
+		        iter.remove();
+		      }
+	  }
   }
 
   @Override

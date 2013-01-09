@@ -37,6 +37,7 @@ public class SelectView extends RelativeLayout implements
 		submit = (Button) findViewById(R.id.submit);
 		submit.setOnClickListener(this);
 		userText = (EditText) findViewById(R.id.editText1);
+		userText.setText(user);
 	}
 
 	//@Override

@@ -34,12 +34,7 @@ public class GraphView extends SurfaceView implements SurfaceHolder.Callback {
   public void init ( Context context, String user, Period period ) {
     surfaceHolder = getHolder();
     surfaceHolder.addCallback( this );
-    // TODO: check if GM must be created somewhere
     worker = new GraphWorker( surfaceHolder, new GraphManager( user, period ) );
-    // TODO: Quand on créer cette SurfaceView, il faut lui passer:
-    // * l'id de l'utilisateur
-    // * le timeslot des artistes à analyser (cf. GraphManager.TimeRange)
-    // Pour ça, faire une vue qui permet d'entrer le nom et choix de la periode
     actionDetector = new GestureDetector( context, new SimpleGestureListener( worker ) );
     scaleGestureDetector = new ScaleGestureDetector( context, new ScaleListener( worker ) );
     setFocusable( true );
@@ -60,7 +55,8 @@ public class GraphView extends SurfaceView implements SurfaceHolder.Callback {
   }
 
   public void surfaceCreated ( SurfaceHolder holder ) {
-    worker.start();
+		if (!worker.isAlive())
+			worker.start();
   }
 
   public void surfaceDestroyed ( SurfaceHolder holder ) {

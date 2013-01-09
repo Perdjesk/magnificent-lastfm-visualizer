@@ -1,6 +1,5 @@
 package ch.gapa.master.mlv.gestureslistener;
 
-import android.util.Log;
 import android.view.GestureDetector;
 import android.view.MotionEvent;
 import ch.gapa.master.mlv.view.worker.GraphWorker;
@@ -15,7 +14,7 @@ public class SimpleGestureListener extends
 
 	@Override
 	public void onLongPress(MotionEvent e) {
-		worker.onLongPress();
+		worker.onLongPress(e.getX(), e.getY());
 	}
 
 	@Override
