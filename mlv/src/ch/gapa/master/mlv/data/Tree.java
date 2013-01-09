@@ -13,7 +13,9 @@ public final class Tree<N> {
 
   public Node<N> insert ( final N data ) {
     Node<N> node = new Node<N>( data, _root );
-    _root._children.add( node );
+    if ( !_root._children.contains( node ) ) {
+      _root._children.add( node );
+    }
     return node;
   }
 
@@ -59,12 +61,20 @@ public final class Tree<N> {
 
     @Override
     public boolean equals ( final Object obj ) {
-      return true;
+      if ( obj == this ) {
+        return true;
+      }
+      if ( !( obj instanceof Node<?> ) ) {
+        return false;
+      }
+      @SuppressWarnings ( "unchecked" )
+      Node<N> node = (Node<N>) obj;
+      return _data.equals( node._data );
     }
 
     @Override
     public int hashCode () {
-      return 0;
+      return _data.hashCode();
     }
   }
 }
