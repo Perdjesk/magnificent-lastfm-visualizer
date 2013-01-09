@@ -13,9 +13,7 @@ public final class Tree<N> {
 
   public Node<N> insert ( final N data ) {
     Node<N> node = new Node<N>( data, _root );
-    if ( !_root._children.contains( node ) ) {
-      _root._children.add( node );
-    }
+    _root._children.add( node );
     return node;
   }
 
